@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Theory Toolkit - Fretboard Selection Test</title>
   <style>
@@ -18,8 +18,8 @@
   </style>
 </head>
 <body>
-  <h1>Fretboard Selection Test 4</h1>
-  <p>This temporary page tests default filtering plus an optional full-fretboard highlight mode.</p>
+  <h1>Fretboard Selection Test 5</h1>
+  <p>This temporary page tests filtering and highlight display while preserving the selected-string scope.</p>
 
   <fieldset>
     <legend>Select String</legend>
@@ -148,7 +148,10 @@
             let visible;
 
             if (mode === "highlight") {
-              visible = true;
+              // Highlight mode changes note filtering, not the chosen string scope.
+              // With no string selection, use the whole fretboard; otherwise show
+              // all notes only on the selected string(s).
+              visible = hasStringFilter ? stringMatches : true;
             } else if (hasStringFilter && hasNoteFilter) {
               visible = stringMatches && noteMatches;
             } else if (hasStringFilter) {
