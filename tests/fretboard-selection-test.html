@@ -18,13 +18,13 @@
   </style>
 </head>
 <body>
-  <h1>Fretboard Selection Test 5</h1>
-  <p>This temporary page tests filtering and highlight display while preserving the selected-string scope.</p>
+  <h1>Fretboard Selection Test 6</h1>
+  <p>This temporary page includes the agreed persistent string scope and no-note-filter behavior.</p>
 
   <fieldset>
-    <legend>Select String</legend>
+    <legend>Select String Scope</legend>
+    <label><input type="radio" id="all-strings" name="string-scope" checked> All Strings</label>
     <div id="string-controls"></div>
-    <label><input type="checkbox" id="show-all"> Show all</label>
   </fieldset>
 
   <fieldset>
@@ -53,7 +53,7 @@
     const selectedNotes = new Set();
     const controls = document.querySelector("#string-controls");
     const noteControls = document.querySelector("#note-controls");
-    const showAll = document.querySelector("#show-all");
+    const allStrings = document.querySelector("#all-strings");
     const clearNotes = document.querySelector("#clear-notes");
     const stringCheckboxes = [];
     const noteButtons = new Map();
@@ -68,18 +68,21 @@
 
       checkbox.addEventListener("change", (event) => {
         const stringNumber = Number(event.target.value);
+
         if (event.target.checked) {
-          showAll.checked = false;
+          allStrings.checked = false;
           selectedStrings.add(stringNumber);
         } else {
           selectedStrings.delete(stringNumber);
+          if (selectedStrings.size === 0) allStrings.checked = true;
         }
+
         renderFretboard();
       });
     }
 
-    showAll.addEventListener("change", () => {
-      if (showAll.checked) {
+    allStrings.addEventListener("change", () => {
+      if (allStrings.checked) {
         selectedStrings.clear();
         for (const checkbox of stringCheckboxes) checkbox.checked = false;
       }
@@ -135,11 +138,10 @@
       const body = document.querySelector("#fretboard-body");
       body.innerHTML = "";
       const mode = displayMode();
-      const hasStringFilter = showAll.checked || selectedStrings.size > 0;
       const hasNoteFilter = selectedNotes.size > 0;
 
       for (const stringData of fretboard) {
-        const stringMatches = showAll.checked || selectedStrings.has(stringData.string);
+        const stringMatches = allStrings.checked || selectedStrings.has(stringData.string);
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${stringData.label}</td>
@@ -148,18 +150,12 @@
             let visible;
 
             if (mode === "highlight") {
-              // Highlight mode changes note filtering, not the chosen string scope.
-              // With no string selection, use the whole fretboard; otherwise show
-              // all notes only on the selected string(s).
-              visible = hasStringFilter ? stringMatches : true;
-            } else if (hasStringFilter && hasNoteFilter) {
-              visible = stringMatches && noteMatches;
-            } else if (hasStringFilter) {
               visible = stringMatches;
             } else if (hasNoteFilter) {
-              visible = noteMatches;
+              visible = stringMatches && noteMatches;
             } else {
-              visible = false;
+              // No selected notes means no note filter: show every note in scope.
+              visible = stringMatches;
             }
 
             const classes = [
