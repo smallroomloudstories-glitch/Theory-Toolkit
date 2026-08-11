@@ -8,20 +8,29 @@
     body { font-family: sans-serif; max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
     fieldset { margin-bottom: 1.25rem; }
     label { margin-right: 1rem; white-space: nowrap; }
+    button { margin: .2rem; padding: .45rem .7rem; cursor: pointer; }
+    button.selected { font-weight: bold; outline: 3px solid currentColor; outline-offset: 1px; }
     table { border-collapse: collapse; width: 100%; }
     th, td { border: 1px solid #bbb; padding: .45rem; text-align: center; }
     th:first-child, td:first-child { text-align: left; }
     .hidden-note { color: transparent; }
+    .selected-note { font-weight: bold; outline: 3px solid currentColor; outline-offset: -4px; }
   </style>
 </head>
 <body>
-  <h1>Fretboard Selection Test 2</h1>
-  <p>This temporary page tests string-selection behavior for the v0.1 Fretboard Explorer.</p>
+  <h1>Fretboard Selection Test 3</h1>
+  <p>This temporary page tests string selection plus multi-note selection using buttons.</p>
 
   <fieldset>
     <legend>Select String</legend>
     <div id="string-controls"></div>
     <label><input type="checkbox" id="show-all"> Show all</label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Select Notes</legend>
+    <div id="note-controls"></div>
+    <button type="button" id="clear-notes">Clear all</button>
   </fieldset>
 
   <table>
@@ -30,14 +39,18 @@
   </table>
 
   <script type="module">
-    import { STANDARD_GUITAR_TUNING } from "../src/data/music-data.js";
+    import { CHROMATIC_SHARPS, STANDARD_GUITAR_TUNING } from "../src/data/music-data.js";
     import { buildFretboard } from "../src/engine/fretboard.js";
 
     const fretboard = buildFretboard(STANDARD_GUITAR_TUNING, 12);
     const selectedStrings = new Set();
+    const selectedNotes = new Set();
     const controls = document.querySelector("#string-controls");
+    const noteControls = document.querySelector("#note-controls");
     const showAll = document.querySelector("#show-all");
+    const clearNotes = document.querySelector("#clear-notes");
     const stringCheckboxes = [];
+    const noteButtons = new Map();
 
     for (const stringData of fretboard) {
       const label = document.createElement("label");
@@ -51,7 +64,6 @@
         const stringNumber = Number(event.target.value);
 
         if (event.target.checked) {
-          // A specific-string choice replaces the blanket Show all state.
           showAll.checked = false;
           selectedStrings.add(stringNumber);
         } else {
@@ -64,13 +76,42 @@
 
     showAll.addEventListener("change", () => {
       if (showAll.checked) {
-        // Show all is a distinct choice, not six simultaneous string choices.
         selectedStrings.clear();
         for (const checkbox of stringCheckboxes) checkbox.checked = false;
       }
-
       renderFretboard();
     });
+
+    for (const note of CHROMATIC_SHARPS) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = note;
+      button.setAttribute("aria-pressed", "false");
+      noteControls.appendChild(button);
+      noteButtons.set(note, button);
+
+      button.addEventListener("click", () => {
+        if (selectedNotes.has(note)) selectedNotes.delete(note);
+        else selectedNotes.add(note);
+
+        updateNoteButtons();
+        renderFretboard();
+      });
+    }
+
+    clearNotes.addEventListener("click", () => {
+      selectedNotes.clear();
+      updateNoteButtons();
+      renderFretboard();
+    });
+
+    function updateNoteButtons() {
+      for (const [note, button] of noteButtons) {
+        const selected = selectedNotes.has(note);
+        button.classList.toggle("selected", selected);
+        button.setAttribute("aria-pressed", String(selected));
+      }
+    }
 
     document.querySelector("#fretboard-head").innerHTML = `
       <tr>
@@ -84,16 +125,25 @@
       body.innerHTML = "";
 
       for (const stringData of fretboard) {
-        const reveal = showAll.checked || selectedStrings.has(stringData.string);
+        const revealString = showAll.checked || selectedStrings.has(stringData.string);
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${stringData.label}</td>
-          ${stringData.frets.map(({ note }) => `<td class="${reveal ? "" : "hidden-note"}">${note}</td>`).join("")}
+          ${stringData.frets.map(({ note }) => {
+            const selectedNote = selectedNotes.has(note);
+            const visible = revealString || selectedNote;
+            const classes = [
+              visible ? "" : "hidden-note",
+              selectedNote ? "selected-note" : ""
+            ].filter(Boolean).join(" ");
+            return `<td class="${classes}">${note}</td>`;
+          }).join("")}
         `;
         body.appendChild(row);
       }
     }
 
+    updateNoteButtons();
     renderFretboard();
   </script>
 </body>
