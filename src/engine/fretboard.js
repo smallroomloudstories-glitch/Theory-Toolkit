@@ -19,3 +19,28 @@ export function noteAtFret(openNote, fret) {
 
   return CHROMATIC_SHARPS[(openIndex + fret) % CHROMATIC_SHARPS.length];
 }
+
+/**
+ * Build note data for every string in a tuning from the open string
+ * through maxFret, inclusive.
+ *
+ * The tuning is data-driven rather than hard-coded to six strings so the
+ * same engine can later support other instruments/tunings.
+ */
+export function buildFretboard(tuning, maxFret) {
+  if (!Array.isArray(tuning) || tuning.length === 0) {
+    throw new Error("Tuning must be a non-empty array.");
+  }
+
+  if (!Number.isInteger(maxFret) || maxFret < 0) {
+    throw new Error(`Maximum fret must be a non-negative integer: ${maxFret}`);
+  }
+
+  return tuning.map((stringData) => ({
+    ...stringData,
+    frets: Array.from(
+      { length: maxFret + 1 },
+      (_, fret) => ({ fret, note: noteAtFret(stringData.note, fret) })
+    )
+  }));
+}
