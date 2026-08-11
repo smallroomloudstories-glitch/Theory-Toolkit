@@ -94,6 +94,19 @@ Current behavior/design direction:
 - Do not invent an "optimal" fingering when one has not been verified.
 - Barre chords should eventually be capable of showing a barre as a finger spanning strings rather than as several unrelated dots.
 
+## Audio interaction
+
+- Audio should always be an explicit user action. **No surprise audio.**
+- Selecting a note in a note selector means "show/filter/highlight this note" and should **not** play a sound.
+- Changing instrument, tuning, key, scale, display mode, Explorer, or other visual/theory controls should not trigger sound merely because the selection changed.
+- A displayed note on the instrument/string can be deliberately clicked or tapped to play that exact pitch. The string/note position itself may serve as the playable control rather than adding speaker icons everywhere.
+- General principle: **visual controls change what the user is exploring; audio controls play what the user is exploring. Do not conflate the two.**
+- Fretboard positions should eventually represent exact pitch (note + octave), not only pitch class/note name. This will allow the same note name on different strings/frets/octaves to sound at the correct frequency.
+- Web Audio API may be sufficient for an initial implementation without requiring prerecorded samples or server-side audio.
+- Initial audio can be a simple clean synthesized tone; more instrument-like sound can be evaluated later if it adds teaching value.
+- Future explicit audio actions may include **Play Chord** and **Play Scale**, using the actual pitches/voicings currently displayed.
+- Audio playback should remain optional and silent unless deliberately invoked by the user.
+
 ## Scale / interval possibilities
 
 - Scale Explorer can use the same underlying fretboard and instrument context.
