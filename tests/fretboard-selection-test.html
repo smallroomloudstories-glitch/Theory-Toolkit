@@ -15,8 +15,8 @@
   </style>
 </head>
 <body>
-  <h1>Fretboard Selection Test 1</h1>
-  <p>This temporary page tests the first interaction from the v0.1 Fretboard Explorer: select one or more strings to reveal all notes on those strings.</p>
+  <h1>Fretboard Selection Test 2</h1>
+  <p>This temporary page tests string-selection behavior for the v0.1 Fretboard Explorer.</p>
 
   <fieldset>
     <legend>Select String</legend>
@@ -37,21 +37,40 @@
     const selectedStrings = new Set();
     const controls = document.querySelector("#string-controls");
     const showAll = document.querySelector("#show-all");
+    const stringCheckboxes = [];
 
     for (const stringData of fretboard) {
       const label = document.createElement("label");
       label.innerHTML = `<input type="checkbox" value="${stringData.string}"> ${stringData.label}`;
       controls.appendChild(label);
 
-      label.querySelector("input").addEventListener("change", (event) => {
+      const checkbox = label.querySelector("input");
+      stringCheckboxes.push(checkbox);
+
+      checkbox.addEventListener("change", (event) => {
         const stringNumber = Number(event.target.value);
-        if (event.target.checked) selectedStrings.add(stringNumber);
-        else selectedStrings.delete(stringNumber);
+
+        if (event.target.checked) {
+          // A specific-string choice replaces the blanket Show all state.
+          showAll.checked = false;
+          selectedStrings.add(stringNumber);
+        } else {
+          selectedStrings.delete(stringNumber);
+        }
+
         renderFretboard();
       });
     }
 
-    showAll.addEventListener("change", renderFretboard);
+    showAll.addEventListener("change", () => {
+      if (showAll.checked) {
+        // Show all is a distinct choice, not six simultaneous string choices.
+        selectedStrings.clear();
+        for (const checkbox of stringCheckboxes) checkbox.checked = false;
+      }
+
+      renderFretboard();
+    });
 
     document.querySelector("#fretboard-head").innerHTML = `
       <tr>
