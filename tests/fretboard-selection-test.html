@@ -18,8 +18,15 @@
   </style>
 </head>
 <body>
-  <h1>Fretboard Selection Test 6</h1>
-  <p>This temporary page includes the agreed persistent string scope and no-note-filter behavior.</p>
+  <h1>Fretboard Selection Test 7</h1>
+  <p>This checkpoint adds instrument/tuning context. Guitar is fixed for now; switch between Standard and Drop D and verify the fretboard regenerates correctly.</p>
+
+  <fieldset>
+    <legend>Instrument</legend>
+    <label>Instrument: <strong>Guitar</strong></label>
+    <label for="tuning-select">Tuning:</label>
+    <select id="tuning-select"></select>
+  </fieldset>
 
   <fieldset>
     <legend>Select String Scope</legend>
@@ -45,40 +52,61 @@
   </table>
 
   <script type="module">
-    import { CHROMATIC_SHARPS, STANDARD_GUITAR_TUNING } from "../src/data/music-data.js";
+    import { CHROMATIC_SHARPS, GUITAR_TUNINGS } from "../src/data/music-data.js";
     import { buildFretboard } from "../src/engine/fretboard.js";
 
-    const fretboard = buildFretboard(STANDARD_GUITAR_TUNING, 12);
+    let activeTuning = GUITAR_TUNINGS.standard;
+    let fretboard = buildFretboard(activeTuning.strings, 12);
     const selectedStrings = new Set();
     const selectedNotes = new Set();
     const controls = document.querySelector("#string-controls");
     const noteControls = document.querySelector("#note-controls");
     const allStrings = document.querySelector("#all-strings");
     const clearNotes = document.querySelector("#clear-notes");
+    const tuningSelect = document.querySelector("#tuning-select");
     const stringCheckboxes = [];
     const noteButtons = new Map();
 
-    for (const stringData of fretboard) {
-      const label = document.createElement("label");
-      label.innerHTML = `<input type="checkbox" value="${stringData.string}"> ${stringData.label}`;
-      controls.appendChild(label);
+    for (const tuning of Object.values(GUITAR_TUNINGS)) {
+      const option = document.createElement("option");
+      option.value = tuning.id;
+      option.textContent = tuning.name;
+      tuningSelect.appendChild(option);
+    }
 
-      const checkbox = label.querySelector("input");
-      stringCheckboxes.push(checkbox);
+    tuningSelect.addEventListener("change", () => {
+      activeTuning = GUITAR_TUNINGS[tuningSelect.value];
+      fretboard = buildFretboard(activeTuning.strings, 12);
+      rebuildStringControls();
+      renderFretboard();
+    });
 
-      checkbox.addEventListener("change", (event) => {
-        const stringNumber = Number(event.target.value);
+    function rebuildStringControls() {
+      controls.innerHTML = "";
+      stringCheckboxes.length = 0;
+      selectedStrings.clear();
+      allStrings.checked = true;
 
-        if (event.target.checked) {
-          allStrings.checked = false;
-          selectedStrings.add(stringNumber);
-        } else {
-          selectedStrings.delete(stringNumber);
-          if (selectedStrings.size === 0) allStrings.checked = true;
-        }
+      for (const stringData of fretboard) {
+        const label = document.createElement("label");
+        label.innerHTML = `<input type="checkbox" value="${stringData.string}"> ${stringData.label}`;
+        controls.appendChild(label);
 
-        renderFretboard();
-      });
+        const checkbox = label.querySelector("input");
+        stringCheckboxes.push(checkbox);
+
+        checkbox.addEventListener("change", (event) => {
+          const stringNumber = Number(event.target.value);
+          if (event.target.checked) {
+            allStrings.checked = false;
+            selectedStrings.add(stringNumber);
+          } else {
+            selectedStrings.delete(stringNumber);
+            if (selectedStrings.size === 0) allStrings.checked = true;
+          }
+          renderFretboard();
+        });
+      }
     }
 
     allStrings.addEventListener("change", () => {
@@ -149,14 +177,9 @@
             const noteMatches = selectedNotes.has(note);
             let visible;
 
-            if (mode === "highlight") {
-              visible = stringMatches;
-            } else if (hasNoteFilter) {
-              visible = stringMatches && noteMatches;
-            } else {
-              // No selected notes means no note filter: show every note in scope.
-              visible = stringMatches;
-            }
+            if (mode === "highlight") visible = stringMatches;
+            else if (hasNoteFilter) visible = stringMatches && noteMatches;
+            else visible = stringMatches;
 
             const classes = [
               visible ? "" : "hidden-note",
@@ -169,6 +192,7 @@
       }
     }
 
+    rebuildStringControls();
     updateNoteButtons();
     renderFretboard();
   </script>
