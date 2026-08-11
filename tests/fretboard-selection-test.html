@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8">">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Theory Toolkit - Fretboard Selection Test</title>
   <style>
@@ -18,8 +18,8 @@
   </style>
 </head>
 <body>
-  <h1>Fretboard Selection Test 3</h1>
-  <p>This temporary page tests string selection plus multi-note selection using buttons.</p>
+  <h1>Fretboard Selection Test 4</h1>
+  <p>This temporary page tests default filtering plus an optional full-fretboard highlight mode.</p>
 
   <fieldset>
     <legend>Select String</legend>
@@ -31,6 +31,12 @@
     <legend>Select Notes</legend>
     <div id="note-controls"></div>
     <button type="button" id="clear-notes">Clear all</button>
+  </fieldset>
+
+  <fieldset>
+    <legend>Display</legend>
+    <label><input type="radio" name="display-mode" value="filter" checked> Filter selected notes</label>
+    <label><input type="radio" name="display-mode" value="highlight"> Show all notes + highlight selections</label>
   </fieldset>
 
   <table>
@@ -62,14 +68,12 @@
 
       checkbox.addEventListener("change", (event) => {
         const stringNumber = Number(event.target.value);
-
         if (event.target.checked) {
           showAll.checked = false;
           selectedStrings.add(stringNumber);
         } else {
           selectedStrings.delete(stringNumber);
         }
-
         renderFretboard();
       });
     }
@@ -93,7 +97,6 @@
       button.addEventListener("click", () => {
         if (selectedNotes.has(note)) selectedNotes.delete(note);
         else selectedNotes.add(note);
-
         updateNoteButtons();
         renderFretboard();
       });
@@ -104,6 +107,14 @@
       updateNoteButtons();
       renderFretboard();
     });
+
+    for (const radio of document.querySelectorAll('input[name="display-mode"]')) {
+      radio.addEventListener("change", renderFretboard);
+    }
+
+    function displayMode() {
+      return document.querySelector('input[name="display-mode"]:checked').value;
+    }
 
     function updateNoteButtons() {
       for (const [note, button] of noteButtons) {
@@ -123,18 +134,34 @@
     function renderFretboard() {
       const body = document.querySelector("#fretboard-body");
       body.innerHTML = "";
+      const mode = displayMode();
+      const hasStringFilter = showAll.checked || selectedStrings.size > 0;
+      const hasNoteFilter = selectedNotes.size > 0;
 
       for (const stringData of fretboard) {
-        const revealString = showAll.checked || selectedStrings.has(stringData.string);
+        const stringMatches = showAll.checked || selectedStrings.has(stringData.string);
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${stringData.label}</td>
           ${stringData.frets.map(({ note }) => {
-            const selectedNote = selectedNotes.has(note);
-            const visible = revealString || selectedNote;
+            const noteMatches = selectedNotes.has(note);
+            let visible;
+
+            if (mode === "highlight") {
+              visible = true;
+            } else if (hasStringFilter && hasNoteFilter) {
+              visible = stringMatches && noteMatches;
+            } else if (hasStringFilter) {
+              visible = stringMatches;
+            } else if (hasNoteFilter) {
+              visible = noteMatches;
+            } else {
+              visible = false;
+            }
+
             const classes = [
               visible ? "" : "hidden-note",
-              selectedNote ? "selected-note" : ""
+              visible && noteMatches ? "selected-note" : ""
             ].filter(Boolean).join(" ");
             return `<td class="${classes}">${note}</td>`;
           }).join("")}
