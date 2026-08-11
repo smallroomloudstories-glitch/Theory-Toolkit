@@ -16,6 +16,19 @@
   - Possibly an Interval Explorer later
 - Key Explorer and Modes Explorer are more theory-facing and may use a different central presentation while retaining the same overall visual language/navigation.
 
+## Teaching and guidance philosophy
+
+- **Theory Toolkit helps users see and explore music theory; it does not try to replace the person teaching it.**
+- Students are intended users and should be able to use the Toolkit independently once they understand what they are trying to explore.
+- An instructor may introduce a concept and show the student how to use the relevant Explorer; the student should then be able to return to the Toolkit later without the instructor present.
+- The Toolkit should explain **how to use the Toolkit**, primarily through clear UI, concise instructions, labels, and contextual guidance rather than a large standalone help file.
+- A small Getting Started / About section may be useful for basic orientation, but the UI itself should carry most operational guidance.
+- Contextual musical information that is part of the visualization is appropriate: note names, chord tones, intervals, scale degrees, formulas/patterns, etc.
+- The Toolkit generally should **not teach music theory from first principles**. It does not need to explain what a chord, interval, scale, or mode is simply because one is being displayed.
+- Instructors, musicians, or learners with appropriate context provide the conceptual explanation; the Toolkit provides an interactive visual representation of that concept.
+- Curated links to external videos/resources may be provided for users who want an explanation of the underlying concept. The video/resource provides the lesson; Theory Toolkit can serve as the interactive visual guide used alongside it.
+- Do not prevent curious self-directed learners from exploring the Toolkit, but do not expand the product into a complete theory course merely to make every Explorer understandable from zero prior knowledge.
+
 ## Shared instrument context
 
 Instrument-facing Explorers should share an instrument context. Current ideas:
