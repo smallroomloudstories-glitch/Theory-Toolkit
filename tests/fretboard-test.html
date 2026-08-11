@@ -5,16 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Theory Toolkit - Fretboard Engine Test</title>
   <style>
-    body { font-family: sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #bbb; padding: .5rem; text-align: left; }
-    .pass { font-weight: bold; }
-    .fail { font-weight: bold; }
+    body { font-family: sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
+    th, td { border: 1px solid #bbb; padding: .5rem; text-align: center; }
+    th:first-child, td:first-child { text-align: left; }
+    .pass, .fail { font-weight: bold; }
   </style>
 </head>
 <body>
-  <h1>Fretboard Engine Test 1</h1>
+  <h1>Fretboard Engine Test 2</h1>
   <p>This is a temporary verification page, not the Theory Toolkit interface.</p>
+
+  <h2>Primitive tests</h2>
   <table>
     <thead>
       <tr><th>Test</th><th>Expected</th><th>Actual</th><th>Result</th></tr>
@@ -22,8 +24,17 @@
     <tbody id="results"></tbody>
   </table>
 
+  <h2>Generated standard-guitar fretboard: open through fret 5</h2>
+  <table>
+    <thead id="fretboard-head"></thead>
+    <tbody id="fretboard-body"></tbody>
+  </table>
+
   <script type="module">
-    import { noteAtFret } from "../src/engine/fretboard.js";
+    import { STANDARD_GUITAR_TUNING } from "../src/data/music-data.js";
+    import { noteAtFret, buildFretboard } from "../src/engine/fretboard.js";
+
+    const fretboard = buildFretboard(STANDARD_GUITAR_TUNING, 5);
 
     const tests = [
       ["Low E, open", "E", noteAtFret("E", 0)],
@@ -32,11 +43,14 @@
       ["D string, fret 2", "E", noteAtFret("D", 2)],
       ["B string, fret 3", "D", noteAtFret("B", 3)],
       ["G string, fret 4", "B", noteAtFret("G", 4)],
-      ["A string, fret 12", "A", noteAtFret("A", 12)]
+      ["A string, fret 12", "A", noteAtFret("A", 12)],
+      ["Generated string count", 6, fretboard.length],
+      ["Generated positions per string", 6, fretboard[0].frets.length],
+      ["Generated string 1 fret 5", "A", fretboard[0].frets[5].note],
+      ["Generated string 6 fret 1", "F", fretboard[5].frets[1].note]
     ];
 
-    const tbody = document.querySelector("#results");
-
+    const results = document.querySelector("#results");
     for (const [name, expected, actual] of tests) {
       const passed = expected === actual;
       const row = document.createElement("tr");
@@ -46,7 +60,24 @@
         <td>${actual}</td>
         <td class="${passed ? "pass" : "fail"}">${passed ? "PASS" : "FAIL"}</td>
       `;
-      tbody.appendChild(row);
+      results.appendChild(row);
+    }
+
+    document.querySelector("#fretboard-head").innerHTML = `
+      <tr>
+        <th>String</th>
+        ${Array.from({ length: 6 }, (_, fret) => `<th>${fret === 0 ? "Open" : `Fret ${fret}`}</th>`).join("")}
+      </tr>
+    `;
+
+    const fretboardBody = document.querySelector("#fretboard-body");
+    for (const stringData of fretboard) {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${stringData.label}</td>
+        ${stringData.frets.map(({ note }) => `<td>${note}</td>`).join("")}
+      `;
+      fretboardBody.appendChild(row);
     }
   </script>
 </body>
