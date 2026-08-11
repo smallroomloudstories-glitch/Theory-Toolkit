@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Theory Toolkit - Fretboard Engine Test</title>
+  <style>
+    body { font-family: sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #bbb; padding: .5rem; text-align: left; }
+    .pass { font-weight: bold; }
+    .fail { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Fretboard Engine Test 1</h1>
+  <p>This is a temporary verification page, not the Theory Toolkit interface.</p>
+  <table>
+    <thead>
+      <tr><th>Test</th><th>Expected</th><th>Actual</th><th>Result</th></tr>
+    </thead>
+    <tbody id="results"></tbody>
+  </table>
+
+  <script type="module">
+    import { noteAtFret } from "../src/engine/fretboard.js";
+
+    const tests = [
+      ["Low E, open", "E", noteAtFret("E", 0)],
+      ["Low E, fret 1", "F", noteAtFret("E", 1)],
+      ["Low E, fret 5", "A", noteAtFret("E", 5)],
+      ["D string, fret 2", "E", noteAtFret("D", 2)],
+      ["B string, fret 3", "D", noteAtFret("B", 3)],
+      ["G string, fret 4", "B", noteAtFret("G", 4)],
+      ["A string, fret 12", "A", noteAtFret("A", 12)]
+    ];
+
+    const tbody = document.querySelector("#results");
+
+    for (const [name, expected, actual] of tests) {
+      const passed = expected === actual;
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${name}</td>
+        <td>${expected}</td>
+        <td>${actual}</td>
+        <td class="${passed ? "pass" : "fail"}">${passed ? "PASS" : "FAIL"}</td>
+      `;
+      tbody.appendChild(row);
+    }
+  </script>
+</body>
+</html>
