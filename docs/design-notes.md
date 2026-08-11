@@ -23,6 +23,12 @@
 - An instructor may introduce a concept and show the student how to use the relevant Explorer; the student should then be able to return to the Toolkit later without the instructor present.
 - The Toolkit should explain **how to use the Toolkit**, primarily through clear UI, concise instructions, labels, and contextual guidance rather than a large standalone help file.
 - A small Getting Started / About section may be useful for basic orientation, but the UI itself should carry most operational guidance.
+- Consider concise **pop-up tooltips / contextual hints** for controls and outputs where their purpose may not be immediately obvious.
+- Tooltips should explain what a control does or what an output represents in the current interface; they should not quietly become miniature music-theory lessons.
+- Users should be able to turn these hints/tooltips off once they are comfortable with the Toolkit and turn them back on later at any time.
+- If user preferences are stored locally, tooltip/hint preference is a good candidate to remember on that browser/device.
+- Tooltips must work sensibly for both pointer and touch users; do not design essential guidance around desktop hover alone.
+- Turning tooltips off must not make controls inaccessible or ambiguous: clear labels and normal accessibility metadata remain necessary.
 - Contextual musical information that is part of the visualization is appropriate: note names, chord tones, intervals, scale degrees, formulas/patterns, etc.
 - The Toolkit generally should **not teach music theory from first principles**. It does not need to explain what a chord, interval, scale, or mode is simply because one is being displayed.
 - Instructors, musicians, or learners with appropriate context provide the conceptual explanation; the Toolkit provides an interactive visual representation of that concept.
