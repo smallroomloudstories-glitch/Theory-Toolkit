@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Theory Toolkit - Scale Explorer Test 1</title>
+  <style>
+    body { font-family: sans-serif; max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: end; margin: 1.5rem 0; }
+    label { display: grid; gap: .35rem; font-weight: bold; }
+    select { font: inherit; padding: .45rem .6rem; }
+    .summary { margin: 1rem 0 1.5rem; padding: .8rem 1rem; background: #f3f3f3; border: 1px solid #ccc; }
+    .fretboard-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; min-width: 900px; }
+    th, td { border: 1px solid #bbb; padding: .45rem; text-align: center; min-width: 2.7rem; }
+    th:first-child, td:first-child { text-align: left; white-space: nowrap; }
+    td.scale-note { font-weight: bold; background: #e8e8e8; }
+    td.root-note { outline: 3px solid currentColor; outline-offset: -4px; }
+    td.not-in-scale { color: #bbb; }
+  </style>
+</head>
+<body>
+  <h1>Scale Explorer — Test 1</h1>
+  <p>This is a temporary behavior test. It verifies the basic pipeline: root + scale formula + tuning → scale tones → fretboard locations.</p>
+
+  <div class="controls">
+    <label>
+      Root / Key
+      <select id="root"></select>
+    </label>
+
+    <label>
+      Scale
+      <select id="scale">
+        <option value="major">Major</option>
+        <option value="naturalMinor">Natural Minor</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="summary" id="summary"></div>
+
+  <div class="fretboard-wrap">
+    <table>
+      <thead id="fretboard-head"></thead>
+      <tbody id="fretboard-body"></tbody>
+    </table>
+  </div>
+
+  <script type="module">
+    import { CHROMATIC_SHARPS, STANDARD_GUITAR_TUNING } from "../src/data/music-data.js";
+    import { buildFretboard } from "../src/engine/fretboard.js";
+
+    const SCALE_FORMULAS = {
+      major: {
+        name: "Major",
+        semitones: [0, 2, 4, 5, 7, 9, 11]
+      },
+      naturalMinor: {
+        name: "Natural Minor",
+        semitones: [0, 2, 3, 5, 7, 8, 10]
+      }
+    };
+
+    const MAX_FRET = 15;
+    const fretboard = buildFretboard(STANDARD_GUITAR_TUNING, MAX_FRET);
+
+    const rootSelect = document.querySelector("#root");
+    const scaleSelect = document.querySelector("#scale");
+    const summary = document.querySelector("#summary");
+    const fretboardHead = document.querySelector("#fretboard-head");
+    const fretboardBody = document.querySelector("#fretboard-body");
+
+    rootSelect.innerHTML = CHROMATIC_SHARPS
+      .map(note => `<option value="${note}" ${note === "G" ? "selected" : ""}>${note}</option>`)
+      .join("");
+
+    fretboardHead.innerHTML = `
+      <tr>
+        <th>String</th>
+        ${Array.from({ length: MAX_FRET + 1 }, (_, fret) =>
+          `<th>${fret === 0 ? "Open" : fret}</th>`
+        ).join("")}
+      </tr>
+    `;
+
+    function buildScale(root, formula) {
+      const rootIndex = CHROMATIC_SHARPS.indexOf(root);
+      return formula.semitones.map(offset =>
+        CHROMATIC_SHARPS[(rootIndex + offset) % CHROMATIC_SHARPS.length]
+      );
+    }
+
+    function render() {
+      const root = rootSelect.value;
+      const formula = SCALE_FORMULAS[scaleSelect.value];
+      const scaleNotes = buildScale(root, formula);
+      const scaleSet = new Set(scaleNotes);
+
+      summary.innerHTML = `<strong>${root} ${formula.name}:</strong> ${scaleNotes.join(" – ")}`;
+      fretboardBody.innerHTML = "";
+
+      for (const stringData of fretboard) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${stringData.label}</td>
+          ${stringData.frets.map(({ note }) => {
+            const inScale = scaleSet.has(note);
+            const classes = [
+              inScale ? "scale-note" : "not-in-scale",
+              note === root ? "root-note" : ""
+            ].filter(Boolean).join(" ");
+
+            return `<td class="${classes}">${inScale ? note : "·"}</td>`;
+          }).join("")}
+        `;
+        fretboardBody.appendChild(row);
+      }
+    }
+
+    rootSelect.addEventListener("change", render);
+    scaleSelect.addEventListener("change", render);
+    render();
+  </script>
+</body>
+</html>
