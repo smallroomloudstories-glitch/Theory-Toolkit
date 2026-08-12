@@ -84,12 +84,15 @@ Current behavior/design direction:
 - Position markers can appear at conventional locations where appropriate, but should remain visually secondary.
 - String thickness may reflect the instrument/string order where useful.
 - Left-handed presentation should be intentionally supported rather than forcing left-handed users to mentally mirror diagrams.
+- Do not treat fret 12 as a hard endpoint. The underlying fretboard model should support a flexible/continuous display range.
+- Approximately **15 frets may be a better default working range** for guitar views because some useful chord/CAGED forms around the octave extend beyond fret 12.
+- The displayed fret range should serve the musical shape or concept being demonstrated rather than forcing the shape to fit an arbitrary endpoint. Later views may frame or emphasize a useful region while retaining enough surrounding neck for context.
 
 ## Chord Shape Explorer
 
 - Chord Shape Explorer should feel like another view of the same instrument used by Fretboard Explorer, not a separate little chord-box application.
 - The spreadsheet's five-fret beginner limit does not need to carry into the web app.
-- Use the same 12+ fret neck model so beginner and more advanced shapes can coexist.
+- Use the shared extended neck model so beginner and more advanced shapes can coexist.
 - Beginner/common shapes should be easy to find first; alternate positions, barre chords, inversions and other voicings can be added later.
 - A future chord-tone system should be able to take:
   - the notes required by a chord
@@ -99,6 +102,20 @@ Current behavior/design direction:
 - A later, more advanced system may suggest playable chord shapes/voicings from those available notes.
 - Mathematically valid chord tones are not automatically human-playable shapes. Shape generation will eventually need playability rules such as fret span, muted/open strings, required chord tones, duplicated tones and realistic hand geometry.
 - Open tunings are an important use case: the tool should make it possible to understand why a chord shape works in the selected tuning rather than only supplying a static diagram.
+
+### CAGED view / shape families
+
+- CAGED is a natural extension of Chord Shape Explorer and probably belongs **within Chord Shape Explorer**, not as a separate top-level Explorer.
+- A likely UI is five selectable shape-family controls labeled **C | A | G | E | D**.
+- When a chord is selected, the most natural/default form can be shown first; selecting another CAGED family shows that chord using the corresponding movable shape/region on the fretboard.
+- Example: selecting C major can initially show open C; selecting the A control then shows the A-shaped C voicing, followed similarly by G-, E-, and D-shaped C forms.
+- The C/A/G/E/D labels describe **shape families**, not chord roots or chord quality.
+- The same framework should extend beyond major chords to minor, maj7, add9, and other chord qualities where practical. The chord formula determines the required tones; the CAGED family provides a positional/geometric framework for finding a playable voicing.
+- Some qualities/forms will be much less visually obvious or ergonomically useful than the familiar major CAGED forms. Do not imply that every theoretically derivable form is equally practical.
+- C-shaped and G-shaped minor forms are examples where an open-position version may not be practical; useful movable/barred versions may occur around the octave and extend beyond fret 12.
+- Consider optionally emphasizing root notes within a selected CAGED form so an instructor can demonstrate why, for example, an A-shaped C is still a C chord.
+- Architecturally, store **shape family** separately from chord root/quality where possible rather than hard-coding every root/quality/shape combination as an unrelated diagram.
+- Long-term conceptual pipeline: **Chord → required tones → shape family → current fretboard/tuning → verified playable fingering.**
 
 ## Realistic fingering presentation
 
@@ -112,6 +129,31 @@ Current behavior/design direction:
   - **Fingering view:** a verified practical way for a human hand to play it
 - Do not invent an "optimal" fingering when one has not been verified.
 - Barre chords should eventually be capable of showing a barre as a finger spanning strings rather than as several unrelated dots.
+
+## Diagram export / teaching materials
+
+- Diagram export is a useful future feature because it completes a real instructor workflow: after finding or demonstrating something in Theory Toolkit, an instructor may want a compact image to place in a worksheet, PDF, lesson note, email, or practice material.
+- Export should be treated as a **portable teaching-material view**, not necessarily a screenshot of the illustrated interactive instrument.
+- Chord Shape Explorer could export a clean, conventional chord-box diagram showing the chord name, strings/frets, open/muted strings, fret position, finger numbers/barres where appropriate, and other information needed to reproduce the fingering.
+- Fretboard/Scale/Interval views could eventually export a clean fretboard diagram containing the currently relevant notes, degrees, intervals, or highlights.
+- The interactive Toolkit view and exported diagram have different jobs: the Toolkit can be contextual, responsive, and visually rich; the export should be compact, conventional, printable, and easy to reuse.
+- SVG is a strong candidate for generated diagrams, with PNG export potentially offered as a convenient additional format.
+- Keep export intentionally focused. Avoid turning it into a general-purpose graphic-design application unless a genuine user need emerges.
+- Export is **not a high-priority feature** compared with building and validating the Explorers themselves, but the underlying data model should avoid making later export unnecessarily difficult.
+- Existing tools used as workflow references include:
+  - ChordPic — https://chordpic.com/ — conventional chord diagram creation/export.
+  - Zeitbach Fretboard Diagram Creator — https://zeitbach.com/projects/fretboard-diagram-creator/ — fretboard diagrams used for scales/notes and student materials.
+- These are references for useful workflows and output needs, **not visual designs to copy**. Theory Toolkit should develop its own UI around its own teaching/exploration workflow.
+
+## Adjacent tools / build-vs-link principle
+
+- Theory Toolkit does not need to reproduce every useful music utility on the web.
+- When an adjacent problem is already solved well elsewhere, linking to a trusted external tool can be preferable to spending early development time duplicating it.
+- A feature becomes a stronger candidate for integration when users repeatedly need to leave Theory Toolkit, recreate information that already exists in the Toolkit, perform the task elsewhere, and return.
+- **Build what Theory Toolkit is particularly suited to doing; link to good tools that solve adjacent problems well; absorb an adjacent feature later only when integration provides a meaningful advantage.**
+- Reverse chord identification is currently a low-priority/nice-to-have feature. A future version could let users select fret positions and return **possible chord names**, but chord naming can be ambiguous because of inversions, omitted/doubled tones, enharmonic spelling, and musical context.
+- If chord identification is ever built, do not imply that an ambiguous collection of notes has one objectively correct chord name; present plausible interpretations appropriately.
+- For now, a useful external reference is ScalesChords Reverse Chord Finder — https://www.scales-chords.com/chordid.php.
 
 ## Audio interaction
 
