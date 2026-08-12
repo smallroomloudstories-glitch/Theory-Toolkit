@@ -3,12 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Theory Toolkit - Scale Explorer Test 2</title>
+  <title>Theory Toolkit - Scale Explorer Test 3</title>
   <style>
     body { font-family: sans-serif; max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
     .controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: end; margin: 1.5rem 0; }
     label { display: grid; gap: .35rem; font-weight: bold; }
     select { font: inherit; padding: .45rem .6rem; }
+    select:disabled { opacity: .5; }
     .summary { margin: 1rem 0 1.5rem; padding: .8rem 1rem; background: #f3f3f3; border: 1px solid #ccc; }
     .fretboard-wrap { overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; min-width: 900px; }
@@ -17,11 +18,13 @@
     td.scale-note { font-weight: bold; background: #e8e8e8; }
     td.root-note { outline: 3px solid currentColor; outline-offset: -4px; }
     td.not-in-scale { color: #bbb; }
+    td.outside-position { color: #ddd; background: #fafafa; }
+    th.position-fret { background: #e8e8e8; }
   </style>
 </head>
 <body>
-  <h1>Scale Explorer — Test 2</h1>
-  <p>This is a temporary behavior test. It verifies root + scale quality + scale view + tuning → scale tones → fretboard locations.</p>
+  <h1>Scale Explorer — Test 3</h1>
+  <p>This temporary behavior test adds a five-position view. Shape 1 is anchored to the low-E-string root; Shapes 2–5 move through the next connected fretboard regions.</p>
 
   <div class="controls">
     <label>
@@ -42,6 +45,25 @@
       <select id="scale-view">
         <option value="diatonic">Diatonic</option>
         <option value="pentatonic">Pentatonic</option>
+      </select>
+    </label>
+
+    <label>
+      Display
+      <select id="display">
+        <option value="fretboard">Fretboard</option>
+        <option value="position">Position</option>
+      </select>
+    </label>
+
+    <label>
+      Position
+      <select id="position" disabled>
+        <option value="0">Shape 1 — E-rooted</option>
+        <option value="1">Shape 2</option>
+        <option value="2">Shape 3</option>
+        <option value="3">Shape 4</option>
+        <option value="4">Shape 5</option>
       </select>
     </label>
   </div>
@@ -70,12 +92,25 @@
       }
     };
 
+    // Test-3 position regions are deliberately data-driven and easy to revise after
+    // hands-on verification. Offsets are measured from Shape 1's low-E-string root.
+    // Each region overlaps its neighbors, as real scale positions do.
+    const POSITION_WINDOWS = [
+      { label: "Shape 1 — E-rooted", start: -1, end: 2 },
+      { label: "Shape 2", start: 2, end: 5 },
+      { label: "Shape 3", start: 4, end: 7 },
+      { label: "Shape 4", start: 7, end: 10 },
+      { label: "Shape 5", start: 9, end: 12 }
+    ];
+
     const MAX_FRET = 15;
     const fretboard = buildFretboard(STANDARD_GUITAR_TUNING, MAX_FRET);
 
     const rootSelect = document.querySelector("#root");
     const scaleSelect = document.querySelector("#scale");
     const scaleViewSelect = document.querySelector("#scale-view");
+    const displaySelect = document.querySelector("#display");
+    const positionSelect = document.querySelector("#position");
     const summary = document.querySelector("#summary");
     const fretboardHead = document.querySelector("#fretboard-head");
     const fretboardBody = document.querySelector("#fretboard-body");
@@ -84,15 +119,6 @@
       .map(note => `<option value="${note}" ${note === "G" ? "selected" : ""}>${note}</option>`)
       .join("");
 
-    fretboardHead.innerHTML = `
-      <tr>
-        <th>String</th>
-        ${Array.from({ length: MAX_FRET + 1 }, (_, fret) =>
-          `<th>${fret === 0 ? "Open" : fret}</th>`
-        ).join("")}
-      </tr>
-    `;
-
     function buildScale(root, formula) {
       const rootIndex = CHROMATIC_SHARPS.indexOf(root);
       return formula.semitones.map(offset =>
@@ -100,29 +126,74 @@
       );
     }
 
+    function lowERootFret(root) {
+      const lowE = fretboard[0];
+      const match = lowE.frets.find(({ note, fret }) => note === root && fret <= 11);
+      return match ? match.fret : 0;
+    }
+
+    function normalizedPositionWindow(root, positionIndex) {
+      const anchor = lowERootFret(root);
+      const region = POSITION_WINDOWS[positionIndex];
+      let start = anchor + region.start;
+      let end = anchor + region.end;
+
+      // Keep the same shape region visible inside our current 0–15 test neck.
+      while (end > MAX_FRET) { start -= 12; end -= 12; }
+      while (start < 0) { start += 12; end += 12; }
+
+      return { start, end, label: region.label };
+    }
+
+    function renderHead(positionWindow) {
+      fretboardHead.innerHTML = `
+        <tr>
+          <th>String</th>
+          ${Array.from({ length: MAX_FRET + 1 }, (_, fret) => {
+            const inPosition = !positionWindow || (fret >= positionWindow.start && fret <= positionWindow.end);
+            return `<th class="${inPosition && positionWindow ? "position-fret" : ""}">${fret === 0 ? "Open" : fret}</th>`;
+          }).join("")}
+        </tr>
+      `;
+    }
+
     function render() {
       const root = rootSelect.value;
       const scaleQuality = scaleSelect.value;
       const scaleView = scaleViewSelect.value;
+      const display = displaySelect.value;
+      const positionIndex = Number(positionSelect.value);
       const formula = SCALE_FORMULAS[scaleView][scaleQuality];
       const scaleNotes = buildScale(root, formula);
       const scaleSet = new Set(scaleNotes);
+      const positionWindow = display === "position"
+        ? normalizedPositionWindow(root, positionIndex)
+        : null;
 
-      summary.innerHTML = `<strong>${root} ${formula.name}:</strong> ${scaleNotes.join(" – ")}`;
+      positionSelect.disabled = display !== "position";
+      renderHead(positionWindow);
+
+      const positionText = positionWindow
+        ? ` &nbsp;|&nbsp; <strong>${positionWindow.label}</strong> (frets ${positionWindow.start}–${positionWindow.end})`
+        : " &nbsp;|&nbsp; <strong>Whole fretboard</strong>";
+      summary.innerHTML = `<strong>${root} ${formula.name}:</strong> ${scaleNotes.join(" – ")}${positionText}`;
       fretboardBody.innerHTML = "";
 
       for (const stringData of fretboard) {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${stringData.label}</td>
-          ${stringData.frets.map(({ note }) => {
+          ${stringData.frets.map(({ note, fret }) => {
             const inScale = scaleSet.has(note);
+            const inPosition = !positionWindow || (fret >= positionWindow.start && fret <= positionWindow.end);
+            const showNote = inScale && inPosition;
             const classes = [
-              inScale ? "scale-note" : "not-in-scale",
-              note === root ? "root-note" : ""
+              showNote ? "scale-note" : "not-in-scale",
+              showNote && note === root ? "root-note" : "",
+              positionWindow && !inPosition ? "outside-position" : ""
             ].filter(Boolean).join(" ");
 
-            return `<td class="${classes}">${inScale ? note : "·"}</td>`;
+            return `<td class="${classes}">${showNote ? note : "·"}</td>`;
           }).join("")}
         `;
         fretboardBody.appendChild(row);
@@ -132,6 +203,8 @@
     rootSelect.addEventListener("change", render);
     scaleSelect.addEventListener("change", render);
     scaleViewSelect.addEventListener("change", render);
+    displaySelect.addEventListener("change", render);
+    positionSelect.addEventListener("change", render);
     render();
   </script>
 </body>
