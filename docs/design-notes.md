@@ -9,11 +9,7 @@
 - The web app should not feel like a collection of unrelated spreadsheet tabs or mini-apps.
 - Explorers are different views/tools within one Theory Toolkit.
 - Relevant context should carry between Explorers where it makes sense rather than resetting unnecessarily.
-- The instrument-facing Explorers currently envisioned include:
-  - Fretboard Explorer
-  - Chord Shape Explorer
-  - Scale Explorer
-  - Possibly an Interval Explorer later
+- The instrument-facing Explorers currently envisioned include Fretboard Explorer, Chord Shape Explorer, Scale Explorer, and possibly an Interval Explorer later.
 - Key Explorer and Modes Explorer are more theory-facing and may use a different central presentation while retaining the same overall visual language/navigation.
 
 ## Teaching and guidance philosophy
@@ -30,168 +26,142 @@
 - Tooltips must work sensibly for both pointer and touch users; do not design essential guidance around desktop hover alone.
 - Turning tooltips off must not make controls inaccessible or ambiguous: clear labels and normal accessibility metadata remain necessary.
 - Contextual musical information that is part of the visualization is appropriate: note names, chord tones, intervals, scale degrees, formulas/patterns, etc.
-- The Toolkit generally should **not teach music theory from first principles**. It does not need to explain what a chord, interval, scale, or mode is simply because one is being displayed.
-- Instructors, musicians, or learners with appropriate context provide the conceptual explanation; the Toolkit provides an interactive visual representation of that concept.
-- Curated links to external videos/resources may be provided for users who want an explanation of the underlying concept. The video/resource provides the lesson; Theory Toolkit can serve as the interactive visual guide used alongside it.
-- Do not prevent curious self-directed learners from exploring the Toolkit, but do not expand the product into a complete theory course merely to make every Explorer understandable from zero prior knowledge.
+- The Toolkit generally should **not teach music theory from first principles**.
+- Curated links to external videos/resources may be provided for users who want an explanation of the underlying concept.
 
 ## Shared instrument context
 
-Instrument-facing Explorers should share an instrument context. Current ideas:
-
-- **Instrument** — standard choices such as Guitar, Bass, Ukulele, Mandolin, etc.
-- **Tuning** — each instrument defaults to its standard tuning.
-- Known alternate tunings should be selectable as presets.
-- A custom tuning should allow the open note of each string to be chosen independently.
-- Presets should simply populate string/tuning data; the fretboard engine should not contain special logic for particular tunings.
+- Instrument-facing Explorers should share instrument, tuning, and handedness context.
+- Standard instrument choices can default to standard tuning; alternate presets and custom per-string tuning should be supported eventually.
+- Presets should populate data rather than requiring tuning-specific fretboard logic.
 - Number of strings should ultimately come from instrument/tuning data rather than being hard-coded to six.
-- **Handedness** — Right / Left should eventually be part of the shared context so relevant views can mirror appropriately.
-- Switching between Fretboard, Chord Shapes, Scales, etc. should preserve instrument/tuning/handedness when relevant.
+- **Handedness — Right / Left** should eventually mirror relevant views appropriately.
 
 ## Fretboard interaction model
-
-Current behavior/design direction:
 
 - String selection defines **where** the user is looking.
 - Note selection defines **what** the user is interested in.
 - Display mode defines **how** the selected information is shown.
 - All Strings should be the default persistent string scope.
-- Selecting one or more individual strings turns All Strings off.
-- If the final individually selected string is cleared, All Strings becomes active again.
-- No selected notes means there is no note filter: show all notes within the selected string scope.
+- No selected notes means there is no note filter.
 - Filter mode + selected notes shows only those notes within the selected string scope.
 - Highlight mode shows all notes within the selected string scope and emphasizes selected notes.
 - Note selection should use buttons rather than checkboxes in the eventual UI.
-- Clear All Notes removes note selections; it should not blank the fretboard.
 
 ## Instrument illustration / neck presentation
 
 - The finished fretboard should look recognizably like an instrument neck rather than a spreadsheet/table.
 - Prefer an original **illustrated / technical-diagram style**, not a photorealistic image.
-- Guitar can visually lean acoustic without representing a specific guitar/model.
-- Bass can visually lean electric bass; other instruments should similarly have enough character to be recognizable without imitating a particular manufacturer's design.
-- The instrument exists primarily for physical/contextual grounding. It should visually recede behind the theory information.
-- Possible visual layering:
-  1. Subtle instrument/neck background
-  2. Strings, nut, frets, position markers
-  3. Notes, intervals, chord tones, scale degrees, fingerings and other teaching information
-- The neck/background may be almost translucent or otherwise subdued so instructional overlays remain dominant.
-- If greater realism makes the theory harder to read, readability wins.
-- SVG may be a good implementation approach because it can scale responsively and allow individual visual layers to be styled dynamically.
-- Fret spacing should resemble a real instrument: wider near the nut and progressively narrower farther down the neck, calculated rather than merely eyeballed if practical.
-- The nut should be visually obvious.
-- A small portion of headstock may remain visible beyond the nut, potentially including partial tuners disappearing off-screen, to reinforce physical orientation without consuming much space.
-- Position markers can appear at conventional locations where appropriate, but should remain visually secondary.
-- String thickness may reflect the instrument/string order where useful.
-- Left-handed presentation should be intentionally supported rather than forcing left-handed users to mentally mirror diagrams.
-- Do not treat fret 12 as a hard endpoint. The underlying fretboard model should support a flexible/continuous display range.
-- Approximately **15 frets may be a better default working range** for guitar views because some useful chord/CAGED forms around the octave extend beyond fret 12.
-- The displayed fret range should serve the musical shape or concept being demonstrated rather than forcing the shape to fit an arbitrary endpoint. Later views may frame or emphasize a useful region while retaining enough surrounding neck for context.
+- Guitar can visually lean acoustic; bass can visually lean electric bass; avoid imitating a particular manufacturer's design.
+- The instrument exists primarily for physical/contextual grounding and should visually recede behind theory information.
+- Fret spacing should resemble a real instrument: wider near the nut and progressively narrower farther down the neck.
+- The nut should be visually obvious; a small portion of headstock/tuners may remain visible for orientation.
+- Left-handed presentation should be intentionally supported.
+- Do not treat fret 12 as a hard endpoint. Approximately **15 frets may be a better default working range** for guitar views, with a flexible underlying model.
 
 ## Chord Shape Explorer
 
-- Chord Shape Explorer should feel like another view of the same instrument used by Fretboard Explorer, not a separate little chord-box application.
+- Chord Shape Explorer should feel like another view of the same instrument used by Fretboard Explorer.
 - The spreadsheet's five-fret beginner limit does not need to carry into the web app.
-- Use the shared extended neck model so beginner and more advanced shapes can coexist.
 - Beginner/common shapes should be easy to find first; alternate positions, barre chords, inversions and other voicings can be added later.
-- A future chord-tone system should be able to take:
-  - the notes required by a chord
-  - the current instrument/tuning
-  - the calculated note locations on that fretboard
-  and show where the chord tones occur.
-- A later, more advanced system may suggest playable chord shapes/voicings from those available notes.
-- Mathematically valid chord tones are not automatically human-playable shapes. Shape generation will eventually need playability rules such as fret span, muted/open strings, required chord tones, duplicated tones and realistic hand geometry.
-- Open tunings are an important use case: the tool should make it possible to understand why a chord shape works in the selected tuning rather than only supplying a static diagram.
+- A future chord-tone system should derive available chord tones from chord + tuning + fretboard locations.
+- Mathematically valid chord tones are not automatically human-playable shapes; eventual generation needs playability rules.
+- Open tunings are an important use case.
 
 ### CAGED view / shape families
 
-- CAGED is a natural extension of Chord Shape Explorer and probably belongs **within Chord Shape Explorer**, not as a separate top-level Explorer.
-- A likely UI is five selectable shape-family controls labeled **C | A | G | E | D**.
-- When a chord is selected, the most natural/default form can be shown first; selecting another CAGED family shows that chord using the corresponding movable shape/region on the fretboard.
-- Example: selecting C major can initially show open C; selecting the A control then shows the A-shaped C voicing, followed similarly by G-, E-, and D-shaped C forms.
-- The C/A/G/E/D labels describe **shape families**, not chord roots or chord quality.
-- The same framework should extend beyond major chords to minor, maj7, add9, and other chord qualities where practical. The chord formula determines the required tones; the CAGED family provides a positional/geometric framework for finding a playable voicing.
-- Some qualities/forms will be much less visually obvious or ergonomically useful than the familiar major CAGED forms. Do not imply that every theoretically derivable form is equally practical.
-- C-shaped and G-shaped minor forms are examples where an open-position version may not be practical; useful movable/barred versions may occur around the octave and extend beyond fret 12.
-- Consider optionally emphasizing root notes within a selected CAGED form so an instructor can demonstrate why, for example, an A-shaped C is still a C chord.
-- Architecturally, store **shape family** separately from chord root/quality where possible rather than hard-coding every root/quality/shape combination as an unrelated diagram.
+- CAGED is a natural extension of Chord Shape Explorer and probably belongs **within Chord Shape Explorer**.
+- A likely UI is five selectable controls labeled **C | A | G | E | D**.
+- C/A/G/E/D describe **shape families**, not chord roots or quality.
+- The framework should extend beyond major chords where practical, without implying every derived form is equally ergonomic.
+- Architecturally, store shape family separately from chord root/quality where possible.
 - Long-term conceptual pipeline: **Chord → required tones → shape family → current fretboard/tuning → verified playable fingering.**
 
 ## Realistic fingering presentation
 
-- Where fingerings are shown, aim to teach realistic fretting technique rather than conventional dots centered in fret spaces.
-- The preferred target is close to the fret wire without being directly on the wire.
-- Fingering data may eventually need more than string + fret; it may include finger number and placement within the fret space.
-- For crowded chord shapes, do not imply that every fingertip can occupy the ideal position immediately behind the fret wire.
-- Illustrations may show realistic staggering: one finger closest to the wire, others progressively farther back where hand geometry requires it while remaining in a good playable position.
-- Consider distinguishing between:
-  - **Theory/shape view:** which strings/frets/notes constitute the chord
-  - **Fingering view:** a verified practical way for a human hand to play it
+- Where fingerings are shown, aim to teach realistic fretting technique rather than dots centered in fret spaces.
+- Preferred target is close to the fret wire without being directly on it.
+- Crowded chord shapes may require realistic staggering rather than implying every fingertip can occupy the ideal position.
+- Consider distinguishing **Theory/shape view** from **Fingering view**.
 - Do not invent an "optimal" fingering when one has not been verified.
-- Barre chords should eventually be capable of showing a barre as a finger spanning strings rather than as several unrelated dots.
+- Barre chords should eventually be capable of showing a barre as a finger spanning strings.
 
 ## Diagram export / teaching materials
 
-- Diagram export is a useful future feature because it completes a real instructor workflow: after finding or demonstrating something in Theory Toolkit, an instructor may want a compact image to place in a worksheet, PDF, lesson note, email, or practice material.
-- Export should be treated as a **portable teaching-material view**, not necessarily a screenshot of the illustrated interactive instrument.
-- Chord Shape Explorer could export a clean, conventional chord-box diagram showing the chord name, strings/frets, open/muted strings, fret position, finger numbers/barres where appropriate, and other information needed to reproduce the fingering.
-- Fretboard/Scale/Interval views could eventually export a clean fretboard diagram containing the currently relevant notes, degrees, intervals, or highlights.
-- The interactive Toolkit view and exported diagram have different jobs: the Toolkit can be contextual, responsive, and visually rich; the export should be compact, conventional, printable, and easy to reuse.
-- SVG is a strong candidate for generated diagrams, with PNG export potentially offered as a convenient additional format.
-- Keep export intentionally focused. Avoid turning it into a general-purpose graphic-design application unless a genuine user need emerges.
-- Export is **not a high-priority feature** compared with building and validating the Explorers themselves, but the underlying data model should avoid making later export unnecessarily difficult.
-- Existing tools used as workflow references include:
-  - ChordPic — https://chordpic.com/ — conventional chord diagram creation/export.
-  - Zeitbach Fretboard Diagram Creator — https://zeitbach.com/projects/fretboard-diagram-creator/ — fretboard diagrams used for scales/notes and student materials.
-- These are references for useful workflows and output needs, **not visual designs to copy**. Theory Toolkit should develop its own UI around its own teaching/exploration workflow.
+- Diagram export is a useful future feature for instructor worksheets, PDFs, lesson notes, email, and practice materials.
+- Export should be a **portable teaching-material view**, not necessarily a screenshot of the illustrated instrument.
+- Chord Shape Explorer could export a clean conventional chord-box; fretboard/scale views could export a clean fretboard diagram.
+- SVG is a strong candidate, with PNG potentially offered as well.
+- Export is **not a high-priority feature** compared with building and validating the Explorers.
+- Workflow references include ChordPic and Zeitbach Fretboard Diagram Creator; these are references for workflow/output needs, **not designs to copy**.
 
 ## Adjacent tools / build-vs-link principle
 
 - Theory Toolkit does not need to reproduce every useful music utility on the web.
-- When an adjacent problem is already solved well elsewhere, linking to a trusted external tool can be preferable to spending early development time duplicating it.
-- A feature becomes a stronger candidate for integration when users repeatedly need to leave Theory Toolkit, recreate information that already exists in the Toolkit, perform the task elsewhere, and return.
 - **Build what Theory Toolkit is particularly suited to doing; link to good tools that solve adjacent problems well; absorb an adjacent feature later only when integration provides a meaningful advantage.**
-- Reverse chord identification is currently a low-priority/nice-to-have feature. A future version could let users select fret positions and return **possible chord names**, but chord naming can be ambiguous because of inversions, omitted/doubled tones, enharmonic spelling, and musical context.
-- If chord identification is ever built, do not imply that an ambiguous collection of notes has one objectively correct chord name; present plausible interpretations appropriately.
-- For now, a useful external reference is ScalesChords Reverse Chord Finder — https://www.scales-chords.com/chordid.php.
+- Reverse chord identification is currently low priority; an external reverse chord finder can serve that need for now.
 
 ## Audio interaction
 
 - Audio should always be an explicit user action. **No surprise audio.**
-- Selecting a note in a note selector means "show/filter/highlight this note" and should **not** play a sound.
-- Changing instrument, tuning, key, scale, display mode, Explorer, or other visual/theory controls should not trigger sound merely because the selection changed.
-- A displayed note on the instrument/string can be deliberately clicked or tapped to play that exact pitch. The string/note position itself may serve as the playable control rather than adding speaker icons everywhere.
-- General principle: **visual controls change what the user is exploring; audio controls play what the user is exploring. Do not conflate the two.**
-- Fretboard positions should eventually represent exact pitch (note + octave), not only pitch class/note name. This will allow the same note name on different strings/frets/octaves to sound at the correct frequency.
-- Web Audio API may be sufficient for an initial implementation without requiring prerecorded samples or server-side audio.
-- Initial audio can be a simple clean synthesized tone; more instrument-like sound can be evaluated later if it adds teaching value.
-- Future explicit audio actions may include **Play Chord** and **Play Scale**, using the actual pitches/voicings currently displayed.
-- Audio playback should remain optional and silent unless deliberately invoked by the user.
+- Selecting a note or changing theory/visual controls should not play sound.
+- A displayed fretboard note can eventually be deliberately clicked/tapped to play that exact pitch.
+- General principle: **visual controls change what the user is exploring; audio controls play what the user is exploring.**
+- Fretboard positions should eventually represent exact pitch (note + octave), not only pitch class.
 
 ## Scale Explorer / interval possibilities
 
 - Scale Explorer should use the same underlying fretboard and shared instrument/tuning/handedness context as the other instrument-facing Explorers.
-- Preserve a **freeform diagram mode** in which the user can click/tap arbitrary fret positions to create a custom diagram. This is useful for riffs, partial patterns, exercises, trouble spots, or teaching examples that do not need to correspond to a named scale.
-- Add a **scale-driven mode** that auto-populates the fretboard from musical selections instead of requiring the user to mark every note manually.
-- Likely core controls include:
-  - **Root / Key** (for example G)
-  - **Scale** (for example Major)
-  - **View** (Position or Fretboard)
-  - **Starting/root string or position family** where appropriate
-- Example: **G + Major + Fretboard** should display every G-major scale tone across the currently displayed neck.
-- A **Position** view should display a playable scale pattern around a selected/root position rather than merely filtering notes to one string.
-- Example: choosing a G-major position based on the low E string should show the relevant playable G-major pattern across neighboring strings. Choosing the A-string-based position should reorganize the displayed pattern around the G root on the A string while still including appropriate scale notes on the low E and other strings.
-- Important distinction: **starting string identifies the position/orientation; it is not a string filter.**
-- The same underlying scale can support multiple labeling views without recalculating the musical content. Possible marker labels include:
-  - Note names (G, A, B, C, D, E, F#)
-  - Scale degrees (1, 2, 3, 4, 5, 6, 7)
-  - Intervals (R, M2, M3, P4, P5, M6, M7)
-- Architectural direction: **Root + scale formula + tuning → scale tones → fretboard locations → selected presentation/view.** Avoid storing static pictures for every key/scale/tuning combination.
+- Preserve a **freeform diagram mode** in which the user can click/tap arbitrary fret positions to create a custom diagram.
+- Add a **scale-driven mode** that auto-populates the fretboard from musical selections.
+- Architectural direction: **Root + scale formula + tuning → scale tones → fretboard locations → selected presentation/view.** Avoid static pictures for every key/scale/tuning combination.
 - Whole-fretboard scale display is primarily derived from note/formula/tuning data and should adapt naturally to alternate tunings and other supported fretted instruments.
-- Position/fingering views require more care than whole-fretboard note mapping. Do not silently present one conventional fingering system as the only correct scale position system.
-- Where practical, position patterns should use verified/playable fingering or pattern definitions and make the chosen organizational system clear.
-- Major-scale positions can provide a foundation for deriving/displaying other scales and modes where musically appropriate, but implementation should not assume every scale is best taught through the same positional system.
-- A possible Interval Explorer could allow a root to be selected and intervals displayed/highlighted across the neck, but this is not yet committed as a separate Explorer.
+
+### Scale and Scale View
+
+- Keep **Scale** separate from **Scale View**.
+- **Scale** identifies the underlying major/minor scale context.
+- **Scale View** determines which commonly used subset/variant of that context is displayed.
+- Initial Scale Views are **Diatonic** and **Pentatonic**.
+- **Blues** is an obvious future Scale View, and other common useful views may be added later without cluttering the Scale selector.
+- This separation is pedagogically useful: switching views can reveal exactly what changes while keeping the same root/scale context.
+
+### Scale positions / five-shape model
+
+- Position view should use a **five-position / five-shape model** across the fretboard rather than merely an E-string/A-string selector.
+- Use the naming convention in which **Shape 1 is the E-shape scale position**, with Shapes 2–5 following sequentially around the fretboard.
+- A position may also carry useful aliases such as its CAGED relationship and whether it is E-rooted or A-rooted. These are descriptions of the same pattern, not separate systems.
+- There are multiple E-rooted/A-rooted positions, so root string alone is not sufficient to uniquely identify a position.
+- Long term, CAGED chord forms and scale positions should be able to share the same fretboard geography so students can see how chord shapes sit inside/alongside scale positions.
+- **Position identifies a pattern, not merely a rectangular fret range.** Do not implement scale positions by showing every scale note inside a broad fret window.
+- Position definitions must be verified musically/string-by-string before being encoded. A mathematically correct scale note that happens to lie inside a fret range is not automatically part of the intended shape.
+- Current Test 3 demonstrated this explicitly: patching broad position windows caused missing/extra notes on individual strings. Before further position code changes, define the expected Shapes 1–5 precisely with the user/instructor.
+
+### Open-position and octave-equivalent shapes
+
+- If a **complete** scale position can be represented naturally at the nut using open strings, show that open-position occurrence.
+- Do not show a mutilated/incomplete open version merely because part of a shape fits before the nut; if the complete shape cannot exist there, show the first complete playable occurrence farther up the neck.
+- If the same complete position can be shown both open and at its octave-equivalent fretted location within the displayed neck, **show both**.
+- Treat both occurrences as equal examples of the same position rather than implying that one is the "real" shape and the other an alternative.
+- More generally, a position/pattern may have multiple complete occurrences on a sufficiently long fretboard.
+
+### Theory annotation and user emphasis
+
+- Default scale presentation should remain relatively neutral. Do **not** automatically color/label root, 3rd, 5th, blue note, etc. merely because the Toolkit knows their roles.
+- A user-controlled option such as **Show Intervals** (final label TBD) can reveal semantic theory information when wanted.
+- Initial semantic color vocabulary:
+  - **Root (R): Green**
+  - **3rd: Dark Gray**
+  - **5th: Light Gray**
+  - **Blue note (Bn): Blue**
+- These semantic colors should mean the same thing throughout Theory Toolkit wherever they are used.
+- Manual emphasis is separate from semantic coloring. A user should be able to click/tap a displayed note to emphasize that note wherever appropriate.
+- Manual emphasis should use a consistent **halo/ring treatment** that does not replace or obscure the note's semantic color.
+- Keep three layers conceptually separate:
+  1. **Content** — which notes are displayed
+  2. **Theory annotation** — what those notes mean, optionally shown
+  3. **User emphasis** — what the user deliberately wants attention drawn to
+- Color should not be the only visual signal where meaning matters; semantic colors/selection states should have suitable non-color cues as the UI matures.
 
 ## Responsive / mobile design
 
@@ -205,6 +175,7 @@ Current behavior/design direction:
 - Do not preserve spreadsheet limitations simply because v0.1 used them.
 - Test interactions by asking whether the result matches what a user predicted before clicking.
 - When a change does not produce the expected result, check assumptions/naming/data early rather than repeatedly layering fixes onto an unverified assumption.
-- Outside feedback is useful from both musicians and non-musicians. Independent agreement from testers is especially valuable.
+- **For musically defined shapes/patterns, stop patching code when the pattern definition itself is uncertain. Define and verify the musical model first, then implement it.**
+- Outside feedback is useful from both musicians and non-musicians.
 - Visual mockups can inform the eventual interface without needing to contain working code.
 - No design note in this file is final. Implementation and user testing may reveal a better answer.
