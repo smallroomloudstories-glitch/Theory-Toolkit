@@ -168,10 +168,29 @@ Current behavior/design direction:
 - Future explicit audio actions may include **Play Chord** and **Play Scale**, using the actual pitches/voicings currently displayed.
 - Audio playback should remain optional and silent unless deliberately invoked by the user.
 
-## Scale / interval possibilities
+## Scale Explorer / interval possibilities
 
-- Scale Explorer can use the same underlying fretboard and instrument context.
-- Major-scale positions can provide a foundation for deriving/displaying other scales and modes where musically appropriate.
+- Scale Explorer should use the same underlying fretboard and shared instrument/tuning/handedness context as the other instrument-facing Explorers.
+- Preserve a **freeform diagram mode** in which the user can click/tap arbitrary fret positions to create a custom diagram. This is useful for riffs, partial patterns, exercises, trouble spots, or teaching examples that do not need to correspond to a named scale.
+- Add a **scale-driven mode** that auto-populates the fretboard from musical selections instead of requiring the user to mark every note manually.
+- Likely core controls include:
+  - **Root / Key** (for example G)
+  - **Scale** (for example Major)
+  - **View** (Position or Fretboard)
+  - **Starting/root string or position family** where appropriate
+- Example: **G + Major + Fretboard** should display every G-major scale tone across the currently displayed neck.
+- A **Position** view should display a playable scale pattern around a selected/root position rather than merely filtering notes to one string.
+- Example: choosing a G-major position based on the low E string should show the relevant playable G-major pattern across neighboring strings. Choosing the A-string-based position should reorganize the displayed pattern around the G root on the A string while still including appropriate scale notes on the low E and other strings.
+- Important distinction: **starting string identifies the position/orientation; it is not a string filter.**
+- The same underlying scale can support multiple labeling views without recalculating the musical content. Possible marker labels include:
+  - Note names (G, A, B, C, D, E, F#)
+  - Scale degrees (1, 2, 3, 4, 5, 6, 7)
+  - Intervals (R, M2, M3, P4, P5, M6, M7)
+- Architectural direction: **Root + scale formula + tuning → scale tones → fretboard locations → selected presentation/view.** Avoid storing static pictures for every key/scale/tuning combination.
+- Whole-fretboard scale display is primarily derived from note/formula/tuning data and should adapt naturally to alternate tunings and other supported fretted instruments.
+- Position/fingering views require more care than whole-fretboard note mapping. Do not silently present one conventional fingering system as the only correct scale position system.
+- Where practical, position patterns should use verified/playable fingering or pattern definitions and make the chosen organizational system clear.
+- Major-scale positions can provide a foundation for deriving/displaying other scales and modes where musically appropriate, but implementation should not assume every scale is best taught through the same positional system.
 - A possible Interval Explorer could allow a root to be selected and intervals displayed/highlighted across the neck, but this is not yet committed as a separate Explorer.
 
 ## Responsive / mobile design
