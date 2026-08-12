@@ -37,6 +37,16 @@
 - Number of strings should ultimately come from instrument/tuning data rather than being hard-coded to six.
 - **Handedness — Right / Left** should eventually mirror relevant views appropriately.
 
+## Shared key/root selector
+
+- Wherever the Toolkit asks for a chromatic key/root, prefer a **circular wheel-style selector** rather than an ordinary finite dropdown list.
+- Reopening the selector should keep the current key/root anchored at the selection point rather than jumping to the beginning of a list.
+- The surrounding chromatic notes should remain visible around the selected note; with twelve pitch classes, the control can potentially show the entire chromatic neighborhood at once.
+- Mouse-wheel/trackpad scrolling should move notes through the anchored selection point; users should also be able to point to/click a visible note directly. Touch and keyboard interaction will need equivalent behavior.
+- The selector should wrap continuously through the chromatic scale: there is no conceptual top or bottom.
+- This is both a stylistic interaction choice and a subtle visual reinforcement of chromatic adjacency (including B–C and E–F).
+- Enharmonic spelling/context can be layered onto this control later without changing the circular interaction model.
+
 ## Fretboard interaction model
 
 - String selection defines **where** the user is looking.
@@ -57,7 +67,7 @@
 - Fret spacing should resemble a real instrument: wider near the nut and progressively narrower farther down the neck.
 - The nut should be visually obvious; a small portion of headstock/tuners may remain visible for orientation.
 - Left-handed presentation should be intentionally supported.
-- Do not treat fret 12 as a hard endpoint. Approximately **15 frets may be a better default working range** for guitar views, with a flexible underlying model.
+- Do not treat fret 12 as a hard endpoint. Approximately **15 frets may be a useful starting range**, but the visible fretboard length is not settled and should be allowed to grow when complete shapes/patterns require it. The underlying model should remain flexible.
 
 ## Chord Shape Explorer
 
@@ -128,14 +138,32 @@
 
 ### Scale positions / five-shape model
 
-- Position view should use a **five-position / five-shape model** across the fretboard rather than merely an E-string/A-string selector.
-- Use the naming convention in which **Shape 1 is the E-shape scale position**, with Shapes 2–5 following sequentially around the fretboard.
+- Position view uses a **five-position / five-shape model** across the fretboard rather than merely an E-string/A-string selector.
+- The Toolkit deliberately adopts one coherent five-shape convention while acknowledging that other teachers/systems may number, divide, or label fretboard positions differently. The labels are an organizational convention, not a claim that these are the only legitimate scale shapes.
+- The current convention follows the BK/Zombie Guitar school of thought used by the project: **Shape 1 is the E-shape scale position**, with Shapes 2–5 following sequentially around the fretboard. If an authoritative source within that same framework suggests a correction, consider the reasoning and revise if appropriate.
 - A position may also carry useful aliases such as its CAGED relationship and whether it is E-rooted or A-rooted. These are descriptions of the same pattern, not separate systems.
 - There are multiple E-rooted/A-rooted positions, so root string alone is not sufficient to uniquely identify a position.
 - Long term, CAGED chord forms and scale positions should be able to share the same fretboard geography so students can see how chord shapes sit inside/alongside scale positions.
-- **Position identifies a pattern, not merely a rectangular fret range.** Do not implement scale positions by showing every scale note inside a broad fret window.
-- Position definitions must be verified musically/string-by-string before being encoded. A mathematically correct scale note that happens to lie inside a fret range is not automatically part of the intended shape.
-- Current Test 3 demonstrated this explicitly: patching broad position windows caused missing/extra notes on individual strings. Before further position code changes, define the expected Shapes 1–5 precisely with the user/instructor.
+- **Position identifies an explicit string-by-string fingering/pattern, not a rectangular fret range.** Neighboring shapes overlap, and those overlaps are not necessarily regular across all six strings.
+- A mathematically correct scale note that happens to lie inside or near a broad fret range is not automatically part of the intended shape.
+- Shape definitions should therefore be captured as explicit per-string fret relationships/geometry and verified musically before encoding.
+- The reference-definition method that worked well was to use one key (G), allow an effectively unlimited fretboard while defining the patterns, and record the natural fret numbers wherever each complete shape actually falls. Display wrapping is a separate software responsibility.
+
+### Verified diatonic geometry — Test 3
+
+- **Test 3 diatonic position behavior is now considered validated.** G Major and G Minor Shapes 1–5 were visually verified against instructor-supplied references, then the transposition behavior was spot-checked in multiple other keys and by walking one shape chromatically through the keys.
+- The earlier broad-window implementation failed because diatonic shapes have irregular overlaps/edges. Replacing it with explicit string-by-string geometry solved the missing/extra-note problems.
+- Major and Minor Diatonic use the **same five underlying physical geometries with rotated Shape labels**. In the current convention: **Major Shape 5 = Minor Shape 1; Major Shape 1 = Minor Shape 2; Major Shape 2 = Minor Shape 3; Major Shape 3 = Minor Shape 4; Major Shape 4 = Minor Shape 5.**
+- This relationship was not assumed in advance; Major and Minor were independently defined/verified first, then the rotation was observed in the verified data.
+- One useful correction discovered during verification: the supplied G Minor Shape 5 reference included an unnecessary low-E-string b6 extension. For the Toolkit's Shape 5 geometry, the low E begins at the b7 (G minor: fret 13), matching the corresponding Major Shape 4 physical geometry.
+- General lesson: **a note can belong to the scale without belonging to the selected position.**
+
+### Verified pentatonic geometry — Test 3
+
+- **Major and Minor Pentatonic Shapes 1–5 are now implemented and visually validated in Test 3**, using the same explicit-geometry approach as Diatonic.
+- Pentatonic Major/Minor also share **five underlying physical geometries with the same rotated Shape-label relationship**: Major 5 = Minor 1, Major 1 = Minor 2, and so on.
+- Pentatonic shape boundaries are visually cleaner than Diatonic: the edge where one shape ends generally becomes the edge where the next begins. Do not use that cleanliness to reintroduce fret-window logic; retain explicit geometry so both Diatonic and Pentatonic use the same reliable model.
+- Current architectural takeaway: there are effectively **five canonical Diatonic geometries and five canonical Pentatonic geometries**, with Major/Minor context determining the Shape 1–5 labels/placement rather than twenty independently maintained shape definitions.
 
 ### Open-position and octave-equivalent shapes
 
@@ -163,6 +191,11 @@
   3. **User emphasis** — what the user deliberately wants attention drawn to
 - Color should not be the only visual signal where meaning matters; semantic colors/selection states should have suitable non-color cues as the UI matures.
 
+### Future motion / animation idea
+
+- The verified transposition model makes a playful but potentially instructive animation possible: keep one selected shape constant and **march it chromatically up or down the fretboard one semitone at a time**.
+- This is a future delight/visualization feature, not a current priority. Its educational value is that the user can see that the physical geometry remains the same while the key/root changes.
+
 ## Responsive / mobile design
 
 - Phone, tablet and desktop use should be treated as normal use cases, not an afterthought.
@@ -176,6 +209,7 @@
 - Test interactions by asking whether the result matches what a user predicted before clicking.
 - When a change does not produce the expected result, check assumptions/naming/data early rather than repeatedly layering fixes onto an unverified assumption.
 - **For musically defined shapes/patterns, stop patching code when the pattern definition itself is uncertain. Define and verify the musical model first, then implement it.**
+- Today's Scale Explorer work reinforced a useful workflow: define the musical truth from an authoritative/verified visual reference; transcribe it into plain string/fret data; verify the transcription; only then encode it and test transposition.
 - Outside feedback is useful from both musicians and non-musicians.
 - Visual mockups can inform the eventual interface without needing to contain working code.
 - No design note in this file is final. Implementation and user testing may reveal a better answer.
