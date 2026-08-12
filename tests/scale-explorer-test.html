@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Theory Toolkit - Scale Explorer Test 1</title>
+  <title>Theory Toolkit - Scale Explorer Test 2</title>
   <style>
     body { font-family: sans-serif; max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
     .controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: end; margin: 1.5rem 0; }
@@ -20,8 +20,8 @@
   </style>
 </head>
 <body>
-  <h1>Scale Explorer — Test 1</h1>
-  <p>This is a temporary behavior test. It verifies the basic pipeline: root + scale formula + tuning → scale tones → fretboard locations.</p>
+  <h1>Scale Explorer — Test 2</h1>
+  <p>This is a temporary behavior test. It verifies root + scale quality + scale view + tuning → scale tones → fretboard locations.</p>
 
   <div class="controls">
     <label>
@@ -33,7 +33,15 @@
       Scale
       <select id="scale">
         <option value="major">Major</option>
-        <option value="naturalMinor">Natural Minor</option>
+        <option value="minor">Minor</option>
+      </select>
+    </label>
+
+    <label>
+      Scale View
+      <select id="scale-view">
+        <option value="diatonic">Diatonic</option>
+        <option value="pentatonic">Pentatonic</option>
       </select>
     </label>
   </div>
@@ -52,13 +60,13 @@
     import { buildFretboard } from "../src/engine/fretboard.js";
 
     const SCALE_FORMULAS = {
-      major: {
-        name: "Major",
-        semitones: [0, 2, 4, 5, 7, 9, 11]
+      diatonic: {
+        major: { name: "Major", semitones: [0, 2, 4, 5, 7, 9, 11] },
+        minor: { name: "Minor", semitones: [0, 2, 3, 5, 7, 8, 10] }
       },
-      naturalMinor: {
-        name: "Natural Minor",
-        semitones: [0, 2, 3, 5, 7, 8, 10]
+      pentatonic: {
+        major: { name: "Major Pentatonic", semitones: [0, 2, 4, 7, 9] },
+        minor: { name: "Minor Pentatonic", semitones: [0, 3, 5, 7, 10] }
       }
     };
 
@@ -67,6 +75,7 @@
 
     const rootSelect = document.querySelector("#root");
     const scaleSelect = document.querySelector("#scale");
+    const scaleViewSelect = document.querySelector("#scale-view");
     const summary = document.querySelector("#summary");
     const fretboardHead = document.querySelector("#fretboard-head");
     const fretboardBody = document.querySelector("#fretboard-body");
@@ -93,7 +102,9 @@
 
     function render() {
       const root = rootSelect.value;
-      const formula = SCALE_FORMULAS[scaleSelect.value];
+      const scaleQuality = scaleSelect.value;
+      const scaleView = scaleViewSelect.value;
+      const formula = SCALE_FORMULAS[scaleView][scaleQuality];
       const scaleNotes = buildScale(root, formula);
       const scaleSet = new Set(scaleNotes);
 
@@ -120,6 +131,7 @@
 
     rootSelect.addEventListener("change", render);
     scaleSelect.addEventListener("change", render);
+    scaleViewSelect.addEventListener("change", render);
     render();
   </script>
 </body>
