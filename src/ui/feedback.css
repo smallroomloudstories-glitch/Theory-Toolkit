@@ -1,1 +1,16 @@
 /* Shared Theory Toolkit feedback styles. */
+.feedback-launch { margin: 2rem 0 1rem; }
+.feedback-panel { border: 1px solid #bbb; background: #fafafa; padding: 1rem 1.2rem; margin: 1rem 0 2rem; }
+.feedback-panel[hidden] { display: none; }
+.feedback-panel h2 { margin-top: 0; }
+.feedback-panel label { display: grid; gap: .35rem; margin: .85rem 0; font-weight: bold; }
+.feedback-panel textarea { min-height: 8rem; resize: vertical; }
+.feedback-panel input, .feedback-panel textarea { box-sizing: border-box; width: 100%; padding: .55rem .65rem; font-family: Arial, Helvetica, sans-serif; font-size: 1rem; line-height: 1.45; }
+.feedback-panel .optional { font-weight: normal; color: #555; }
+.feedback-contact { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.feedback-actions { display: flex; gap: .7rem; align-items: center; margin-top: 1rem; }
+.feedback-actions button, .feedback-launch button { padding: .55rem .85rem; cursor: pointer; }
+.feedback-note { font-size: .9rem; color: #555; }
+.feedback-status { font-weight: bold; }
+.feedback-status.error { color: #8b0000; }
+@media (max-width: 650px) { .feedback-contact { grid-template-columns: 1fr; } }
