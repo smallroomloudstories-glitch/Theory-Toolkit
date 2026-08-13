@@ -2,7 +2,7 @@
 
 > **Status:** Working ideas, not requirements carved in stone.
 >
-> This document records design ideas and principles that come up during development so they are not lost. Any item here may be changed, discarded, or revisited when implementation begins or testing suggests a better approach.
+> This document records design ideas and principles that come up during development so they are not lost. Any item here may be changed, discarded, or revisited when implementation begins or testing suggests a better answer.
 
 ## Overall application model
 
@@ -89,6 +89,7 @@
 - The framework should extend beyond major chords where practical, without implying every derived form is equally ergonomic.
 - Architecturally, store shape family separately from chord root/quality where possible.
 - Long-term conceptual pipeline: **Chord → required tones → shape family → current fretboard/tuning → verified playable fingering.**
+- A future CAGED teaching view should also demonstrate that **chords and chord-tone targeting are available from/around each scale position** (or close enough to the position to be pedagogically useful). This belongs with the CAGED/position relationship rather than as an isolated Chord Explorer feature: the goal is to let a student see the chord form embedded in the same fretboard geography used for the scale, then target chord tones while playing through that position.
 
 ## Realistic fingering presentation
 
@@ -194,29 +195,15 @@
   - **3rd: Dark Gray**
   - **5th: Light Gray**
   - **Blue note (Bn): Blue**
-- Green Root and Blue Note have strong semantic value. Dark Gray/Light Gray for 3rd/5th proved less visually convincing in the temporary table prototype and should be reconsidered against the eventual illustrated fretboard rather than optimized prematurely for the HTML test table.
-- Semantic colors should mean the same thing throughout Theory Toolkit wherever they are used.
-- Manual emphasis is separate from semantic coloring. A user should be able to click/tap a displayed note to emphasize that note wherever appropriate.
-- Manual emphasis should use a consistent **halo/ring treatment** that does not replace or obscure the note's semantic color.
-- Keep three layers conceptually separate:
-  1. **Content** — which notes are displayed
-  2. **Theory annotation** — what those notes mean, optionally shown
-  3. **User emphasis** — what the user deliberately wants attention drawn to
-- Color should not be the only visual signal where meaning matters; semantic colors/selection states should have suitable non-color cues as the UI matures.
+- Green Root and Blue Note have strong semantic value. Dark Gray/Light Gray for 3rd/5th proved less visually convincing in the temporary table prototype and should be reconsidered against the eventual illustrated fretboard rather than treated as settled UI.
+- Preserve the current verified shape behavior when switching Major ↔ Minor: **Shape number remains the selected organizational position, and the displayed geometry changes to the corresponding Major or Minor shape.** This lets the user directly compare, for example, G Major Pentatonic Shape 1 with G Minor Pentatonic Shape 1 rooted in the same key context. A temporary A/B prototype that instead held physical geometry fixed and changed the Shape selector was tested and rejected.
 
-### Major/Minor position-switch behavior — validated in Test 5
+### Major / minor shape comparison — Test 6 candidate
 
-- When the user is in Position view and switches **Major ↔ Minor**, **preserve the selected Shape number**. Example: Major Shape 5 → Minor Shape 5.
-- A temporary alternative was tested in which the physical geometry/viewpoint was preserved and the selector automatically changed shape number (e.g. Major Shape 5 → Minor Shape 1). Although musically defensible, testing showed that this obscured the intended comparison and was rejected; the temporary comparison page was removed.
-- The teaching question is not "keep this physical geometry and tell me its new label." It is "show me the Major and Minor versions of the same selected position." The visual change is useful information, not an unwanted UI jump.
-- General interaction principle reinforced by this test: when comparing Major and Minor positions, hold the **explicit user selection (Shape number)** constant and let the musical result change.
-
-### Shape Compare — Test 6 candidate
-
-- A dedicated **Major vs. Minor Shape Compare** is a strong Test 6 candidate.
-- Compare **one selected Shape/Position at a time**, not complete scales across the entire neck. The user should be able to change Shape 1–5 and have both comparison views update together.
-- The comparison does **not require a Key**. Its purpose is to show the transferable interval/geometry relationship between Major and Minor forms; a key would merely choose where that relationship happens to sit on a physical neck.
-- Therefore the comparison should primarily use **interval labels**, not absolute note names.
+- Add a dedicated comparison view that shows **Major and Minor position geometry simultaneously**, rather than requiring the user to toggle back and forth mentally.
+- Keep this comparison **position-focused**, not whole-fretboard-focused. The teaching goal is to isolate a small section/shape and make the differences visually obvious.
+- The comparison does **not need to be tied to a particular key or absolute fret number**. It can compare the relative geometry of Major vs. Minor for a selected Shape/Position; key/fret location is irrelevant to that conceptual task.
+- Use **interval labels** as the primary comparison language rather than note names. This exposes exactly what changes between Major and Minor without introducing arbitrary pitch names.
 - Side-by-side compact fretboard windows are the leading desktop presentation. Stacked views may prove clearer and are naturally suitable for narrow/mobile layouts. An overlay could eventually distinguish Major-only, Minor-only, and shared notes, but is a later experiment after the simpler comparison is validated.
 - Avoid arbitrary absolute fret numbers in a keyless comparison; use relative geometry/positioning or another neutral presentation.
 - This comparison also provides a gentle conceptual bridge into **parallel modes**: keep the tonic/root concept fixed and compare changing interval structures.
@@ -255,17 +242,28 @@
 ## Tester builds and feedback
 
 - Tester-facing pages should use **Build** terminology rather than internal **Test** terminology. Internal experiments may still be called tests; outside testers should see stable Build names/numbers.
-- Tester links must point only to the last explicitly approved/passed build. Work-in-progress changes stay on the workbench and are not exposed merely because development has advanced.
+- Tester links must point only to the last explicitly approved/passed build. Work-in-progress changes must not be linked from the tester index merely because development has advanced.
+- **An unlisted development page on the normal GitHub Pages deployment is sufficient for current pre-release testing.** It may contain newer work and be accessed by direct URL while the tester index continues to advertise only the last passed Build. This is not a security boundary and does not need to be one; its purpose is simply to prevent ordinary testers from accidentally entering unfinished work. A separate Cloudflare preview site was considered and rejected as unnecessary infrastructure for the current need.
 - Promotion is deliberate: when a build is declared passed, publish that approved state and update the tester-facing link name, Build number, and description together so labels never become stale or misleading.
 - The tester index should explain that builds are functional prototypes rather than finished UI and ask for feedback on: **what worked, what didn't, what was expected instead, and what the tester would like added.**
-- Add a prominent **Send Feedback** web form so testers do not have to message the developer directly or understand the repository workflow.
-- The preferred storage destination for form submissions is the project's GitHub issue tracker (for example with a `tester-feedback` label), not arbitrary source-code files. This keeps feedback searchable, sortable, and associated with the project without mixing user submissions into application source.
-- The form should automatically record enough context to make feedback actionable, especially the **Explorer and Build number** being tested. Candidate fields include what worked, what didn't, expected behavior, requested additions, general comments, and optional contact information.
-- **Do not expose GitHub credentials/tokens in client-side code.** A public static page must never contain a token capable of creating repository content.
-- A simple tester experience that does not require a GitHub account will therefore require a small secure server-side endpoint/serverless function (or an appropriately trustworthy form/backend service) to validate submissions and create the GitHub issue using server-held credentials.
-- Treat spam/abuse resistance, input validation/length limits, rate limiting, and safe handling of optional contact information as part of the implementation rather than afterthoughts.
+- Provide a noticeable but unobtrusive **Send Feedback** control on the tester index and each tester-facing Explorer/build page.
+
+### Feedback system — implemented and end-to-end validated
+
+- The secure feedback plumbing is now implemented using a **Cloudflare Worker** as the server-side endpoint and a **private GitHub feedback repository** as the storage/review queue. Testers do not need GitHub accounts.
+- The GitHub credential is stored only as an **encrypted Cloudflare Worker secret** (`GITHUB_TOKEN`). It is referenced by name in Worker code and is never embedded in browser/client code. The temporary plaintext copy used during setup was deleted after the connection was proven.
+- The Worker accepts deliberate **POST** submissions rather than creating feedback from ordinary page visits/refreshes. Browser submissions are restricted to the approved Theory Toolkit GitHub Pages origin; an unauthorized Cloudflare Preview request was explicitly tested and correctly returned **403 Forbidden** without creating feedback.
+- The endpoint validates JSON input, requires feedback text, applies length limits, performs basic optional-email validation, and returns generic visitor-facing errors rather than exposing GitHub/backend responses.
+- Do not deliberately collect/store IP address, user-agent, operating system, screen size, referring site, cookies, or activity outside Theory Toolkit. Stored diagnostic context should be limited to Toolkit state deliberately supplied by the page.
+- The first Scale Explorer implementation automatically records **Explorer/page, Build number, and current Toolkit selections**. For Scale Explorer this currently includes root/key, Major/Minor, Scale View, Fretboard/Position display, selected Shape when applicable, and Notes vs. Intervals/Degrees.
+- User-entered fields are intentionally lightweight: **feedback first**, optional "What did you expect instead?", optional name, and optional email for follow-up. Avoid forcing testers through administrative dropdowns before they can type their comment.
+- **UX requirement: opening Send Feedback must immediately place keyboard focus in the main feedback typing area.** This was explicitly tested in the live unlisted Scale Explorer page and passed.
+- Keep the form inline as part of the page rather than using a popup/new window. Popups are easier to block and unnecessarily interrupt the tester's context.
+- Privacy wording should communicate that feedback/contact information is used only for improving/following up on Theory Toolkit feedback and **will not be sold or used for any other purpose.**
+- The first real end-to-end submission was successfully validated: browser → Cloudflare Worker → private GitHub issue, including Build/page/selections and optional contact data.
+- **Before tester release:** replace the browser-ish/default typing-area typography with a comfortable proportional font. Apply the eventual Toolkit typography consistently to textareas and other form controls; the writing area should feel comfortable for prose, not like a code/data-entry box. Then perform one final submission test before propagating the proven component to the tester index and other live test pages.
+- Heavy anti-spam/rate-limit infrastructure is intentionally deferred unless actual abuse makes it necessary. Input restrictions and origin/method controls are appropriate now; do not overengineer for a spam problem that does not yet exist.
 - Email may remain available as a secondary fallback, but the web form should be the encouraged feedback path.
-- **Near-term priority:** implement the secure feedback form within roughly the next development session or two rather than leaving it as a distant future feature.
 
 ## Design/testing philosophy
 
@@ -278,4 +276,5 @@
 - A/B behavior prototypes are useful when a UI idea sounds right in discussion but is hard to evaluate abstractly. Build the reversible comparison, test it, and remove it if the original behavior proves clearer.
 - Outside feedback is useful from both musicians and non-musicians.
 - Visual mockups can inform the eventual interface without needing to contain working code.
+- **Use a recurring sanity check against overengineering.** When a new idea starts attracting infrastructure or complexity, restate the actual requirement and ask whether a simpler existing mechanism satisfies it. Prefer the simpler path when it meets the real need and does not create a foreseeable architectural trap. Today's example: an unlisted page on the existing deployment solved pre-release browser testing without requiring a second Cloudflare Pages site.
 - No design note in this file is final. Implementation and user testing may reveal a better answer.
