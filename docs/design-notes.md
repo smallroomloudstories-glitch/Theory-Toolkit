@@ -28,6 +28,7 @@
 - Contextual musical information that is part of the visualization is appropriate: note names, chord tones, intervals, scale degrees, formulas/patterns, etc.
 - The Toolkit generally should **not teach music theory from first principles**.
 - Curated links to external videos/resources may be provided for users who want an explanation of the underlying concept.
+- Some deeper explanations may live in an FAQ or optional "deep water" path so beginning students are not forced through theoretical nuance they do not yet need.
 
 ## Shared instrument context
 
@@ -63,6 +64,8 @@
 - The finished fretboard should look recognizably like an instrument neck rather than a spreadsheet/table.
 - Prefer an original **illustrated / technical-diagram style**, not a photorealistic image.
 - Guitar can visually lean acoustic; bass can visually lean electric bass; avoid imitating a particular manufacturer's design.
+- A strong candidate for the guitar reference is the actual **4½ Inch STUDio guitar**: photograph it square-on with even lighting, then derive a clean illustration used as a static UI asset rather than regenerating an image dynamically.
+- The final UI will probably show little or none of the body, but if a sliver of body is useful, allowing at least one visible guest-signature mark gives the instrument some STUDio identity. If a real signature cannot honestly be positioned in the visible crop, use a fictionalized decorative signature rather than relocating a real guest's signature.
 - The instrument exists primarily for physical/contextual grounding and should visually recede behind theory information.
 - Fret spacing should resemble a real instrument: wider near the nut and progressively narrower farther down the neck.
 - The nut should be visually obvious; a small portion of headstock/tuners may remain visible for orientation.
@@ -132,9 +135,10 @@
 - Keep **Scale** separate from **Scale View**.
 - **Scale** identifies the underlying major/minor scale context.
 - **Scale View** determines which commonly used subset/variant of that context is displayed.
-- Initial Scale Views are **Diatonic** and **Pentatonic**.
-- **Blues** is an obvious future Scale View, and other common useful views may be added later without cluttering the Scale selector.
+- Current beginning-student Scale Views are **Diatonic, Pentatonic, and Blues**. These are ample for the first useful version; additional scales can be added later only when they earn their place pedagogically rather than merely because they exist.
 - This separation is pedagogically useful: switching views can reveal exactly what changes while keeping the same root/scale context.
+- Modes may eventually be available as an optional Major-scale examination rather than turning Scale Explorer into an encyclopedia of modal scale choices. The seven Major-scale modes are sufficient to teach the transferable concept.
+- Preserve both **Relative** and **Parallel** mode perspectives from v0.1. They need not necessarily use two full fretboards; a comparison panel plus one active fretboard may be cleaner, with a dedicated two-fretboard comparison considered later if useful.
 
 ### Scale positions / five-shape model
 
@@ -165,6 +169,13 @@
 - Pentatonic shape boundaries are visually cleaner than Diatonic: the edge where one shape ends generally becomes the edge where the next begins. Do not use that cleanliness to reintroduce fret-window logic; retain explicit geometry so both Diatonic and Pentatonic use the same reliable model.
 - Current architectural takeaway: there are effectively **five canonical Diatonic geometries and five canonical Pentatonic geometries**, with Major/Minor context determining the Shape 1–5 labels/placement rather than twenty independently maintained shape definitions.
 
+### Verified Blues geometry — Test 4
+
+- **Major and Minor Blues Shapes 1–5 are implemented and visually validated in Test 4.**
+- Blues follows the same broad Major/Minor rotation relationship observed in Diatonic and Pentatonic: the five physical shape families recur, while Major and Minor assign different Shape numbers/root relationships.
+- The Blues scale must include every occurrence of the blue note that belongs to the selected explicit shape; do not add only one representative blue note per box. Verification of the G reference caught missing blue-note occurrences and confirmed the complete string-by-string geometry before implementation.
+- The current beginning-student Scale Explorer scope is therefore validated across **Major/Minor Diatonic, Pentatonic, and Blues**, Shapes 1–5.
+
 ### Open-position and octave-equivalent shapes
 
 - If a **complete** scale position can be represented naturally at the nut using open strings, show that open-position occurrence.
@@ -173,16 +184,18 @@
 - Treat both occurrences as equal examples of the same position rather than implying that one is the "real" shape and the other an alternative.
 - More generally, a position/pattern may have multiple complete occurrences on a sufficiently long fretboard.
 
-### Theory annotation and user emphasis
+### Theory annotation and user emphasis — Test 5
 
-- Default scale presentation should remain relatively neutral. Do **not** automatically color/label root, 3rd, 5th, blue note, etc. merely because the Toolkit knows their roles.
-- A user-controlled option such as **Show Intervals** (final label TBD) can reveal semantic theory information when wanted.
-- Initial semantic color vocabulary:
+- **Test 5 introduces a user-selectable Notes vs. Intervals/Degrees presentation** for the same verified scale geometry. Notes answers "what notes am I playing?"; Intervals/Degrees answers "what role does each note have relative to the root/reference framework?"
+- Switching Notes ↔ Intervals should not move the fretboard vertically. Keep legends/context below the fretboard (or otherwise reserve stable space) so the user can visually compare the same geometry without layout shift.
+- Default scale presentation should remain relatively neutral. Do **not** automatically color/label root, 3rd, 5th, blue note, etc. merely because the Toolkit knows their roles; theory annotation is user-controlled.
+- Initial semantic color vocabulary remains provisional:
   - **Root (R): Green**
   - **3rd: Dark Gray**
   - **5th: Light Gray**
   - **Blue note (Bn): Blue**
-- These semantic colors should mean the same thing throughout Theory Toolkit wherever they are used.
+- Green Root and Blue Note have strong semantic value. Dark Gray/Light Gray for 3rd/5th proved less visually convincing in the temporary table prototype and should be reconsidered against the eventual illustrated fretboard rather than optimized prematurely for the HTML test table.
+- Semantic colors should mean the same thing throughout Theory Toolkit wherever they are used.
 - Manual emphasis is separate from semantic coloring. A user should be able to click/tap a displayed note to emphasize that note wherever appropriate.
 - Manual emphasis should use a consistent **halo/ring treatment** that does not replace or obscure the note's semantic color.
 - Keep three layers conceptually separate:
@@ -190,6 +203,43 @@
   2. **Theory annotation** — what those notes mean, optionally shown
   3. **User emphasis** — what the user deliberately wants attention drawn to
 - Color should not be the only visual signal where meaning matters; semantic colors/selection states should have suitable non-color cues as the UI matures.
+
+### Major/Minor position-switch behavior — validated in Test 5
+
+- When the user is in Position view and switches **Major ↔ Minor**, **preserve the selected Shape number**. Example: Major Shape 5 → Minor Shape 5.
+- A temporary alternative was tested in which the physical geometry/viewpoint was preserved and the selector automatically changed shape number (e.g. Major Shape 5 → Minor Shape 1). Although musically defensible, testing showed that this obscured the intended comparison and was rejected; the temporary comparison page was removed.
+- The teaching question is not "keep this physical geometry and tell me its new label." It is "show me the Major and Minor versions of the same selected position." The visual change is useful information, not an unwanted UI jump.
+- General interaction principle reinforced by this test: when comparing Major and Minor positions, hold the **explicit user selection (Shape number)** constant and let the musical result change.
+
+### Shape Compare — Test 6 candidate
+
+- A dedicated **Major vs. Minor Shape Compare** is a strong Test 6 candidate.
+- Compare **one selected Shape/Position at a time**, not complete scales across the entire neck. The user should be able to change Shape 1–5 and have both comparison views update together.
+- The comparison does **not require a Key**. Its purpose is to show the transferable interval/geometry relationship between Major and Minor forms; a key would merely choose where that relationship happens to sit on a physical neck.
+- Therefore the comparison should primarily use **interval labels**, not absolute note names.
+- Side-by-side compact fretboard windows are the leading desktop presentation. Stacked views may prove clearer and are naturally suitable for narrow/mobile layouts. An overlay could eventually distinguish Major-only, Minor-only, and shared notes, but is a later experiment after the simpler comparison is validated.
+- Avoid arbitrary absolute fret numbers in a keyless comparison; use relative geometry/positioning or another neutral presentation.
+- This comparison also provides a gentle conceptual bridge into **parallel modes**: keep the tonic/root concept fixed and compare changing interval structures.
+
+### Interval terminology / Major reference framework
+
+- Distinguish **scale degree** from the conventional comparative interval label. Within a natural minor scale, its third degree is still its third degree; calling it **♭3** describes its interval/reference relationship rather than making it somehow "less thirdy."
+- Beginner-facing explanation worth preserving: **"The ♭3 is still the third — it isn't less thirdy."** Then explain that it lies one half-step below the 3 in the Major/Ionian reference framework.
+- For displays such as Shape Compare, notation like **♭3, ♭6, ♭7, ♯4** is intentionally comparative. The underlying reference is the key/tonic, expressed through the conventional Major/Ionian framework.
+- Keep the normal UI explanation simple. Do not force a beginning student to untangle the philosophical distinction between degree names and interval labels before they can use the tool.
+- Add an eventual FAQ/deep-water explanation along the lines of:
+  - **FAQ: When we say ♭3 or ♯4, what does that mean?**
+  - Short answer: it describes an interval relationship to the key's tonic using Major/Ionian as the reference framework.
+  - Offer an optional more detailed explanation with a playful warning such as **"WARNING: You cannot unsee what you're about to see!"**
+- Natural minor/Aeolian is a useful bridge into Modes: a student can first understand Major vs. minor as a fixed-root interval comparison, then later learn that natural minor is Aeolian and extend the same parallel comparison idea to all seven Major-scale modes.
+
+### Modes direction
+
+- Scale Explorer may expose Modes only in the **Major/Diatonic context** for the beginning-student scope; that is ample information to explain the concept and let the learner generalize further independently.
+- Preserve both **Relative** and **Parallel** views as in v0.1, ideally visible together conceptually even if they do not require two simultaneous full fretboards.
+- Relative modes demonstrate **same parent-scale notes, different tonal center/root**. The fretboard note set can remain unchanged while the root/interval interpretation moves.
+- Parallel modes demonstrate **same tonic/root, different interval structures**. This is the natural extension of the Major/minor comparison introduced earlier.
+- Teaching sequence candidate: **Major vs. minor comparison → Relative modes (same notes, different root) → Parallel modes (same root, different intervals).**
 
 ### Future motion / animation idea
 
@@ -209,7 +259,8 @@
 - Test interactions by asking whether the result matches what a user predicted before clicking.
 - When a change does not produce the expected result, check assumptions/naming/data early rather than repeatedly layering fixes onto an unverified assumption.
 - **For musically defined shapes/patterns, stop patching code when the pattern definition itself is uncertain. Define and verify the musical model first, then implement it.**
-- Today's Scale Explorer work reinforced a useful workflow: define the musical truth from an authoritative/verified visual reference; transcribe it into plain string/fret data; verify the transcription; only then encode it and test transposition.
+- Scale Explorer work reinforced a useful workflow: define the musical truth from an authoritative/verified visual reference; transcribe it into plain string/fret data; verify the transcription; only then encode it and test transposition.
+- A/B behavior prototypes are useful when a UI idea sounds right in discussion but is hard to evaluate abstractly. Build the reversible comparison, test it, and remove it if the original behavior proves clearer.
 - Outside feedback is useful from both musicians and non-musicians.
 - Visual mockups can inform the eventual interface without needing to contain working code.
 - No design note in this file is final. Implementation and user testing may reveal a better answer.
