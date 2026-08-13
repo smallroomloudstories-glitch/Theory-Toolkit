@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Theory Toolkit - Fretboard Selection Build 7</title>
+  <link rel="stylesheet" href="../src/ui/feedback.css">
   <style>
     body { font-family: sans-serif; max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
     fieldset { margin-bottom: 1.25rem; }
@@ -54,6 +55,7 @@
   <script type="module">
     import { CHROMATIC_SHARPS, GUITAR_TUNINGS } from "../src/data/music-data.js";
     import { buildFretboard } from "../src/engine/fretboard.js";
+    import { installFeedback } from "../src/ui/feedback.js";
 
     let activeTuning = GUITAR_TUNINGS.standard;
     let fretboard = buildFretboard(activeTuning.strings, 12);
@@ -195,6 +197,21 @@
     rebuildStringControls();
     updateNoteButtons();
     renderFretboard();
+
+    installFeedback({
+      page: "Fretboard Selection",
+      build: "Build 7",
+      getContext: () => {
+        const scope = allStrings.checked
+          ? "All Strings"
+          : [...selectedStrings].sort((a, b) => a - b).join(", ");
+        const notes = selectedNotes.size
+          ? [...selectedNotes].join(", ")
+          : "None selected";
+        const mode = displayMode() === "highlight" ? "Highlight" : "Filter";
+        return `Instrument: Guitar; Tuning: ${activeTuning.name}; String scope: ${scope}; Selected notes: ${notes}; Display: ${mode}`;
+      }
+    });
   </script>
 </body>
 </html>
