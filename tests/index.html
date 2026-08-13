@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Theory Toolkit - Current Builds</title>
+  <link rel="stylesheet" href="../src/ui/feedback.css">
   <style>
     body { font-family: sans-serif; max-width: 820px; margin: 2rem auto; padding: 0 1rem; line-height: 1.55; }
     h1 { margin-bottom: .25rem; }
@@ -14,22 +15,6 @@
     li { margin: .8rem 0; }
     a { font-weight: bold; }
     small { display: block; color: #666; }
-    input, textarea, button { font: inherit; }
-    .feedback-launch { margin: 2rem 0 1rem; }
-    .feedback-launch button, .feedback-actions button { padding: .55rem .85rem; cursor: pointer; }
-    .feedback-panel { border: 1px solid #bbb; background: #fafafa; padding: 1rem 1.2rem; margin: 1rem 0 2rem; }
-    .feedback-panel[hidden] { display: none; }
-    .feedback-panel h2 { margin-top: 0; }
-    .feedback-panel label { display: grid; gap: .35rem; font-weight: bold; margin: .85rem 0; }
-    .feedback-panel textarea { min-height: 8rem; resize: vertical; }
-    .feedback-panel input, .feedback-panel textarea { box-sizing: border-box; width: 100%; padding: .45rem .6rem; }
-    .feedback-panel .optional { font-weight: normal; color: #555; }
-    .feedback-contact { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .feedback-actions { display: flex; gap: .7rem; align-items: center; margin-top: 1rem; }
-    .feedback-note { font-size: .9rem; color: #555; }
-    .feedback-status { font-weight: bold; }
-    .feedback-status.error { color: #8b0000; }
-    @media(max-width:650px) { .feedback-contact { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
@@ -53,39 +38,13 @@
 
   <h2>Current builds</h2>
   <ul>
-    <li>
-      <a href="fretboard-selection-test.html">Fretboard Selection — Build 7</a>
-      <small>Explore note selection, string scope, filtering, highlighting, and guitar tuning behavior on the fretboard.</small>
-    </li>
-    <li>
-      <a href="scale-explorer-test.html">Scale Explorer — Build 5</a>
-      <small>Explore Major and minor Diatonic, Pentatonic, and Blues scales across the fretboard or by Shape 1–5, and compare note-name and interval/degree views.</small>
-    </li>
+    <li><a href="fretboard-selection-test.html">Fretboard Selection — Build 7</a><small>Explore note selection, string scope, filtering, highlighting, and guitar tuning behavior on the fretboard.</small></li>
+    <li><a href="scale-explorer-test.html">Scale Explorer — Build 5</a><small>Explore Major and minor Diatonic, Pentatonic, and Blues scales across the fretboard or by Shape 1–5, and compare note-name and interval/degree views.</small></li>
   </ul>
 
-  <div class="feedback-launch"><button type="button" id="feedback-toggle">Send Feedback</button></div>
-  <section class="feedback-panel" id="feedback-panel" hidden aria-labelledby="feedback-heading">
-    <h2 id="feedback-heading">Send Feedback</h2>
-    <form id="feedback-form">
-      <label for="feedback-text">Tell me what you think<textarea id="feedback-text" maxlength="10000" required placeholder="What worked, what didn't, what surprised you, or what would you like to see?"></textarea></label>
-      <label for="feedback-expected">What did you expect instead? <span class="optional">(optional)</span><textarea id="feedback-expected" maxlength="5000"></textarea></label>
-      <div class="feedback-contact">
-        <label for="feedback-name">Your name <span class="optional">(optional)</span><input id="feedback-name" maxlength="200" autocomplete="name"></label>
-        <label for="feedback-email">Email <span class="optional">(optional — only if you'd like a reply)</span><input id="feedback-email" type="email" maxlength="320" autocomplete="email"></label>
-      </div>
-      <p class="feedback-note">This report identifies the Theory Toolkit page you are using. It does not collect information about activity outside Theory Toolkit.</p>
-      <p class="feedback-note"><strong>Privacy:</strong> Your feedback is used only to improve Theory Toolkit. Your name and email are optional and will only be used to follow up with you about your feedback. Your information will not be sold or used for any other purpose.</p>
-      <div class="feedback-actions"><button type="submit" id="feedback-submit">Submit Feedback</button><button type="button" id="feedback-cancel">Cancel</button><span class="feedback-status" id="feedback-status" role="status" aria-live="polite"></span></div>
-    </form>
-  </section>
-
-  <script>
-    const FEEDBACK_ENDPOINT="https://theory-toolkit-feedback.smallroomloudstories.workers.dev/";
-    const feedbackToggle=document.querySelector("#feedback-toggle"),feedbackPanel=document.querySelector("#feedback-panel"),feedbackForm=document.querySelector("#feedback-form"),feedbackText=document.querySelector("#feedback-text"),feedbackExpected=document.querySelector("#feedback-expected"),feedbackName=document.querySelector("#feedback-name"),feedbackEmail=document.querySelector("#feedback-email"),feedbackSubmit=document.querySelector("#feedback-submit"),feedbackCancel=document.querySelector("#feedback-cancel"),feedbackStatus=document.querySelector("#feedback-status");
-    function openFeedback(){feedbackPanel.hidden=false;feedbackStatus.textContent="";feedbackStatus.classList.remove("error");requestAnimationFrame(()=>feedbackText.focus())}
-    function closeFeedback(){feedbackPanel.hidden=true;feedbackToggle.focus()}
-    feedbackToggle.addEventListener("click",openFeedback); feedbackCancel.addEventListener("click",closeFeedback);
-    feedbackForm.addEventListener("submit",async e=>{e.preventDefault();feedbackStatus.textContent="Submitting…";feedbackStatus.classList.remove("error");feedbackSubmit.disabled=true;try{const response=await fetch(FEEDBACK_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({feedback:feedbackText.value,expected:feedbackExpected.value,name:feedbackName.value,email:feedbackEmail.value,page:"Tester Index",build:"Current Builds",context:"Tester landing page"})});let result={};try{result=await response.json()}catch{}if(!response.ok||!result.ok)throw new Error(result.message||"Feedback could not be submitted right now. Please try again.");feedbackForm.reset();feedbackStatus.textContent=result.message||"Thanks! Your feedback has been submitted.";feedbackText.focus()}catch(error){feedbackStatus.textContent=error.message||"Feedback could not be submitted right now. Please try again.";feedbackStatus.classList.add("error");feedbackText.focus()}finally{feedbackSubmit.disabled=false}});
+  <script type="module">
+    import { installFeedback } from "../src/ui/feedback.js";
+    installFeedback({ page: "Tester Index", build: "Current Builds", getContext: () => "Tester landing page" });
   </script>
 </body>
 </html>
