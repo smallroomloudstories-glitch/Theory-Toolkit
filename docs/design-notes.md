@@ -252,6 +252,21 @@
 - A student using a phone on a music stand is a plausible real-world scenario.
 - The current prototype already works reasonably on at least one large Android phone in portrait and landscape, but that is only an early sanity check, not proof that responsive design is solved.
 
+## Tester builds and feedback
+
+- Tester-facing pages should use **Build** terminology rather than internal **Test** terminology. Internal experiments may still be called tests; outside testers should see stable Build names/numbers.
+- Tester links must point only to the last explicitly approved/passed build. Work-in-progress changes stay on the workbench and are not exposed merely because development has advanced.
+- Promotion is deliberate: when a build is declared passed, publish that approved state and update the tester-facing link name, Build number, and description together so labels never become stale or misleading.
+- The tester index should explain that builds are functional prototypes rather than finished UI and ask for feedback on: **what worked, what didn't, what was expected instead, and what the tester would like added.**
+- Add a prominent **Send Feedback** web form so testers do not have to message the developer directly or understand the repository workflow.
+- The preferred storage destination for form submissions is the project's GitHub issue tracker (for example with a `tester-feedback` label), not arbitrary source-code files. This keeps feedback searchable, sortable, and associated with the project without mixing user submissions into application source.
+- The form should automatically record enough context to make feedback actionable, especially the **Explorer and Build number** being tested. Candidate fields include what worked, what didn't, expected behavior, requested additions, general comments, and optional contact information.
+- **Do not expose GitHub credentials/tokens in client-side code.** A public static page must never contain a token capable of creating repository content.
+- A simple tester experience that does not require a GitHub account will therefore require a small secure server-side endpoint/serverless function (or an appropriately trustworthy form/backend service) to validate submissions and create the GitHub issue using server-held credentials.
+- Treat spam/abuse resistance, input validation/length limits, rate limiting, and safe handling of optional contact information as part of the implementation rather than afterthoughts.
+- Email may remain available as a secondary fallback, but the web form should be the encouraged feedback path.
+- **Near-term priority:** implement the secure feedback form within roughly the next development session or two rather than leaving it as a distant future feature.
+
 ## Design/testing philosophy
 
 - Current HTML test pages are behavior prototypes, not visual proposals.
