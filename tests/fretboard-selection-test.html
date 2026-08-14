@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Theory Toolkit - Fretboard Selection Test</title>
+  <title>Theory Toolkit - Fretboard Selection Workbench</title>
   <style>
     body { font-family: sans-serif; max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
     fieldset { margin-bottom: 1.25rem; }
@@ -13,13 +13,15 @@
     table { border-collapse: collapse; width: 100%; }
     th, td { border: 1px solid #bbb; padding: .45rem; text-align: center; }
     th:first-child, td:first-child { text-align: left; }
+    td.fret-position { cursor: pointer; }
     .hidden-note { color: transparent; }
     .selected-note { font-weight: bold; outline: 3px solid currentColor; outline-offset: -4px; }
+    .focused-position { box-shadow: inset 0 0 0 4px #111; background: #fff3a6; color: #111; font-weight: bold; }
   </style>
 </head>
 <body>
-  <h1>Fretboard Selection Test 7</h1>
-  <p>This checkpoint adds instrument/tuning context. Guitar is fixed for now; switch between Standard and Drop D and verify the fretboard regenerates correctly.</p>
+  <h1>Fretboard Explorer — Workbench</h1>
+  <p>Focus checkpoint 1: click any fretboard position to focus that exact location. Click it again to remove focus. Focus is independent of note selection and display filtering.</p>
 
   <fieldset>
     <legend>Instrument</legend>
@@ -46,6 +48,12 @@
     <label><input type="radio" name="display-mode" value="highlight"> Show all notes + highlight selections</label>
   </fieldset>
 
+  <fieldset>
+    <legend>Focus</legend>
+    <button type="button" id="clear-focus">Clear Focus</button>
+    <span id="focus-status">No positions focused</span>
+  </fieldset>
+
   <table>
     <thead id="fretboard-head"></thead>
     <tbody id="fretboard-body"></tbody>
@@ -54,15 +62,19 @@
   <script type="module">
     import { CHROMATIC_SHARPS, GUITAR_TUNINGS } from "../src/data/music-data.js";
     import { buildFretboard } from "../src/engine/fretboard.js";
+    import { createFretboardFocus } from "../src/engine/fretboard-focus.js";
 
     let activeTuning = GUITAR_TUNINGS.standard;
     let fretboard = buildFretboard(activeTuning.strings, 12);
+    const focus = createFretboardFocus();
     const selectedStrings = new Set();
     const selectedNotes = new Set();
     const controls = document.querySelector("#string-controls");
     const noteControls = document.querySelector("#note-controls");
     const allStrings = document.querySelector("#all-strings");
     const clearNotes = document.querySelector("#clear-notes");
+    const clearFocus = document.querySelector("#clear-focus");
+    const focusStatus = document.querySelector("#focus-status");
     const tuningSelect = document.querySelector("#tuning-select");
     const stringCheckboxes = [];
     const noteButtons = new Map();
@@ -77,6 +89,7 @@
     tuningSelect.addEventListener("change", () => {
       activeTuning = GUITAR_TUNINGS[tuningSelect.value];
       fretboard = buildFretboard(activeTuning.strings, 12);
+      focus.clear();
       rebuildStringControls();
       renderFretboard();
     });
@@ -139,6 +152,11 @@
       renderFretboard();
     });
 
+    clearFocus.addEventListener("click", () => {
+      focus.clear();
+      renderFretboard();
+    });
+
     for (const radio of document.querySelectorAll('input[name="display-mode"]')) {
       radio.addEventListener("change", renderFretboard);
     }
@@ -153,6 +171,13 @@
         button.classList.toggle("selected", selected);
         button.setAttribute("aria-pressed", String(selected));
       }
+    }
+
+    function updateFocusStatus() {
+      focusStatus.textContent = focus.size === 0
+        ? "No positions focused"
+        : `${focus.size} position${focus.size === 1 ? "" : "s"} focused`;
+      clearFocus.disabled = focus.size === 0;
     }
 
     document.querySelector("#fretboard-head").innerHTML = `
@@ -171,25 +196,37 @@
       for (const stringData of fretboard) {
         const stringMatches = allStrings.checked || selectedStrings.has(stringData.string);
         const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${stringData.label}</td>
-          ${stringData.frets.map(({ note }) => {
-            const noteMatches = selectedNotes.has(note);
-            let visible;
+        const stringLabel = document.createElement("td");
+        stringLabel.textContent = stringData.label;
+        row.appendChild(stringLabel);
 
-            if (mode === "highlight") visible = stringMatches;
-            else if (hasNoteFilter) visible = stringMatches && noteMatches;
-            else visible = stringMatches;
+        stringData.frets.forEach(({ note }, fretNumber) => {
+          const noteMatches = selectedNotes.has(note);
+          let visible;
 
-            const classes = [
-              visible ? "" : "hidden-note",
-              visible && noteMatches ? "selected-note" : ""
-            ].filter(Boolean).join(" ");
-            return `<td class="${classes}">${note}</td>`;
-          }).join("")}
-        `;
+          if (mode === "highlight") visible = stringMatches;
+          else if (hasNoteFilter) visible = stringMatches && noteMatches;
+          else visible = stringMatches;
+
+          const cell = document.createElement("td");
+          cell.classList.add("fret-position");
+          if (!visible) cell.classList.add("hidden-note");
+          if (visible && noteMatches) cell.classList.add("selected-note");
+          if (focus.has(stringData.string, fretNumber)) cell.classList.add("focused-position");
+          cell.textContent = note;
+          cell.dataset.string = String(stringData.string);
+          cell.dataset.fret = String(fretNumber);
+          cell.title = `String ${stringData.string}, ${fretNumber === 0 ? "open" : `fret ${fretNumber}`}: ${note}`;
+          cell.addEventListener("click", () => {
+            focus.toggle(stringData.string, fretNumber);
+            renderFretboard();
+          });
+          row.appendChild(cell);
+        });
+
         body.appendChild(row);
       }
+      updateFocusStatus();
     }
 
     rebuildStringControls();
