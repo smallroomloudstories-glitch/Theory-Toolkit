@@ -30,11 +30,13 @@
     .hidden-note { color: transparent; }
     .selected-note { font-weight: bold; outline: 3px solid currentColor; outline-offset: -4px; }
     .focused-position { box-shadow: inset 0 0 0 4px #111; background: #fff3a6; color: #111; font-weight: bold; }
+    .page-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: .65rem; }
+  .update-stamp { font-size: 10pt; font-weight: normal; color: #555; white-space: nowrap; }
   </style>
 </head>
 <body>
   <p><a href="index.html">← Current Builds</a></p>
-  <h1>Fretboard Explorer — Live Test</h1>
+  <div class="page-title"><h1>Fretboard Explorer — Live Test</h1><span class="update-stamp">Updated August 16, 2026</span></div>
   <p class="workbench-mark">Approved build for live testing.</p>
   <p class="checkpoint-note">Current build — approved illustrated fretboard, string scope, note filtering, enharmonic display, and temporary Focus annotations.</p>
 
