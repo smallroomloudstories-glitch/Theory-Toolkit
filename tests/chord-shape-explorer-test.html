@@ -130,17 +130,17 @@
     clearFocus.addEventListener("click",()=>{focus.clear();focusOverrides.clear();nutModes=nutModes.map(mode=>mode==="focus"?"normal":mode);render()});
     accidentalToggle.addEventListener("click",()=>{accidentalDisplay=accidentalDisplay==="sharps"?"flats":"sharps";accidentalToggle.textContent=accidentalDisplay==="sharps"?"#":"b";accidentalToggle.setAttribute("aria-label",accidentalDisplay==="sharps"?"Showing sharps; switch to flats":"Showing flats; switch to sharps");render()});
     function toolkitContext(){
-      const fingerSummary=selectedChord?selectedChord.frets.map((fret,index)=>fret?\`${GUITAR_TUNINGS.standard.strings[index].label} fret ${fret}: ${fingerAssignments[index]}\`:null).filter(Boolean).join(", "):"None";
+      const fingerSummary=selectedChord?selectedChord.frets.map((fret,index)=>fret?`${GUITAR_TUNINGS.standard.strings[index].label} fret ${fret}: ${fingerAssignments[index]}`:null).filter(Boolean).join(", "):"None";
       return [
-        \`Chord: ${selectedChord?.label??"None"}\`,
-        \`Chord Tones: ${selectedChord?selectedChord.tones.map(displayNote).join(", "):"None"}\`,
-        \`Labels: ${labelMode}\`,
-        \`Fingering: ${fingerSummary}\`,
-        \`Nut States: ${nutModes.length?nutModes.join(", "):"None"}\`,
-        \`Hidden Chord Positions: ${hiddenChordPositions.size}\`,
-        \`String Scope: ${allStringsActive?"All Strings":[...selectedStrings].sort((a,b)=>a-b).join(", ")}\`,
-        \`Accidentals: ${accidentalDisplay}\`,
-        \`Focused Positions: ${focus.size+nutModes.filter(mode=>mode==="focus").length}\`
+        `Chord: ${selectedChord?.label??"None"}`,
+        `Chord Tones: ${selectedChord?selectedChord.tones.map(displayNote).join(", "):"None"}`,
+        `Labels: ${labelMode}`,
+        `Fingering: ${fingerSummary}`,
+        `Nut States: ${nutModes.length?nutModes.join(", "):"None"}`,
+        `Hidden Chord Positions: ${hiddenChordPositions.size}`,
+        `String Scope: ${allStringsActive?"All Strings":[...selectedStrings].sort((a,b)=>a-b).join(", ")}`,
+        `Accidentals: ${accidentalDisplay}`,
+        `Focused Positions: ${focus.size+nutModes.filter(mode=>mode==="focus").length}`
       ].join("; ")
     }
     installFeedback({page:"Chord Shape Explorer",build:"New Feature Live Test",getContext:toolkitContext});
