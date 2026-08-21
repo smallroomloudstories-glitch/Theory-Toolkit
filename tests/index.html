@@ -6,47 +6,151 @@
   <title>Theory Toolkit - Current Builds</title>
   <link rel="stylesheet" href="../src/ui/feedback.css">
   <style>
-    body { font-family: sans-serif; max-width: 820px; margin: 2rem auto; padding: 0 1rem; line-height: 1.55; }
-    h1 { margin-bottom: .25rem; }
-    h2 { margin-top: 2rem; }
-    .note { color: #555; margin-top: 0; }
-    .tester-note { background: #f5f5f5; border: 1px solid #ccc; padding: 1rem 1.2rem; margin: 1.5rem 0; }
-    ul { padding-left: 1.4rem; }
-    li { margin: .8rem 0; }
+    :root {
+      --border: #aaa;
+      --soft-border: #ccc;
+      --surface: #f5f5f5;
+      --accent: #1e4f87;
+      --accent-soft: #eaf3ff;
+      --new: #fff3a6;
+      --new-ink: #5f4b00;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; max-width: 1100px; margin: 1.5rem auto 3rem; padding: 0 1rem; line-height: 1.5; color: #222; }
+    h1, h2, h3 { line-height: 1.2; }
     a { font-weight: bold; }
-    small { display: block; color: #666; }
-    .new-feature { display: inline-block; margin-right: .4rem; padding: .05rem .35rem; border: 1px solid #8a6d00; background: #fff3a6; color: #5f4b00; font-size: .82rem; }
+    .hero { border: 3px solid #222; padding: 1rem 1.25rem; background: #fafafa; }
+    .hero h1 { margin: 0 0 .35rem; }
+    .hero p { max-width: 850px; margin: .35rem 0; }
+    .build-mark { font-weight: bold; }
+    .start-note { margin: 1rem 0 .8rem; padding: .7rem .85rem; border-left: 5px solid var(--accent); background: var(--accent-soft); }
+    .start-note p { margin: .2rem 0; }
+    .section-heading { margin: 1.25rem 0 .25rem; }
+    .section-intro { margin: 0 0 .8rem; color: #555; }
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: .75rem; }
+    .tool { display: flex; flex-direction: column; min-height: 12rem; padding: .85rem 1rem; border: 2px solid var(--border); background: #fff; }
+    .tool:hover { border-color: var(--accent); background: #f8fbff; }
+    .tool h3 { margin: 0 0 .35rem; }
+    .tool p { margin: .25rem 0; }
+    .tool-link { margin-top: auto !important; padding-top: .7rem; }
+    .tool-link a { display: inline-block; padding: .45rem .65rem; border: 1px solid var(--accent); background: var(--accent); color: #fff; text-decoration: none; }
+    .tool-link a:hover, .tool-link a:focus { background: #153b68; }
+    .new-feature { display: inline-block; margin-left: .35rem; padding: .05rem .35rem; border: 1px solid #8a6d00; background: var(--new); color: var(--new-ink); font-size: .75rem; vertical-align: .15rem; }
+    .tester-note { margin-top: 2rem; padding: 1rem 1.2rem; border: 1px solid var(--soft-border); background: var(--surface); }
+    .tester-note h2 { margin-top: 0; }
+    .tester-note li { margin: .55rem 0; }
+    .scroll-cue {
+      position: fixed;
+      left: 50%;
+      bottom: .8rem;
+      z-index: 30;
+      padding: .4rem .75rem;
+      border: 1px solid #153b68;
+      border-radius: 999px;
+      background: rgba(30, 79, 135, .94);
+      color: #fff;
+      font: inherit;
+      font-weight: bold;
+      box-shadow: 0 .2rem .65rem rgba(0, 0, 0, .28);
+      cursor: pointer;
+      transform: translateX(-50%);
+      animation: scroll-nudge 1.8s ease-in-out infinite;
+    }
+    .scroll-cue[hidden] { display: none; }
+    .scroll-cue:hover, .scroll-cue:focus-visible { background: #153b68; }
+    @keyframes scroll-nudge {
+      0%, 65%, 100% { transform: translate(-50%, 0); }
+      78% { transform: translate(-50%, .28rem); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-cue { animation: none; }
+    }
+    @media (max-width: 650px) {
+      body { margin-top: .75rem; }
+      .hero { padding: .8rem .9rem; }
+      .tool-grid { grid-template-columns: 1fr; }
+    }
   </style>
   <link rel="stylesheet" href="../src/ui/mobile-support-notice.css">
 </head>
 <body>
-  <h1>Theory Toolkit — Current Builds</h1>
-  <p class="note">These are the latest builds that have completed functional testing. They are not the finished Theory Toolkit interface.</p>
+  <header class="hero">
+    <h1>Theory Toolkit</h1>
+    <p class="build-mark">Current test builds</p>
+    <p>Theory Toolkit is a visual companion for music students and instructors. It is designed to make musical relationships easier to see during a lesson and easier to revisit while practicing or reviewing.</p>
+  </header>
 
-  <aside class="mobile-support-notice" role="note"><strong>Mobile notice:</strong> The illustrated fretboard Explorers are currently designed for laptop and desktop screens. On phones, notes may be missing or misaligned. Mobile presentation is still in development.</aside>
+  <aside class="mobile-support-notice" role="note"><strong>Best viewed on a laptop or desktop:</strong> The illustrated fretboard Explorers are not yet optimized for phones, where notes may be missing or misaligned.</aside>
 
-  <div class="tester-note">
-    <strong>Thanks for helping test Theory Toolkit!</strong>
-    <p>Theory Toolkit is being developed as a visual companion for music students and instructors. The goal is to make musical relationships easier to see and explore while an instructor explains them — and to give students something they can return to later when practicing or reviewing.</p>
-    <p>The fretboard-based pages include the approved illustrated presentation, and every Explorer includes tested musical behavior. The broader Theory Toolkit navigation and final site design are still in development. Please test both how the Explorers work and whether the presentation helps you understand what you are seeing.</p>
-    <p>Please explore rather than following a strict test script. Change selections, try combinations, and see whether the page behaves the way you expect it to.</p>
-    <p>The feedback I'm most interested in is:</p>
-    <ul>
-      <li><strong>What worked?</strong> What felt clear, useful, or intuitive?</li>
-      <li><strong>What didn't?</strong> Did anything behave incorrectly, confusingly, or awkwardly?</li>
-      <li><strong>What did you expect?</strong> If something surprised you, what did you think would happen instead?</li>
-      <li><strong>What would you like to see added?</strong> Is there a control, comparison, view, or piece of information that would make this more useful to you?</li>
-    </ul>
-    <p>You do not need to be a music-theory expert to give useful feedback. If something doesn't make sense to you, <strong>that itself is useful information.</strong> If you are an instructor or experienced player, I'm also very interested in anything that is musically misleading or that you would present differently to a student.</p>
+  <div class="start-note">
+    <p><strong>New to Theory Toolkit?</strong></p>
+    <p>Start with <a href="fretboard-selection-test.html">Fretboard Explorer</a> to explore note locations, or <a href="chord-shape-explorer-test.html">Chord Shape Explorer</a> to demonstrate beginner chord fingerings.</p>
   </div>
 
-  <h2>Current builds</h2>
-  <ul>
-    <li><a href="fretboard-selection-test.html">Fretboard Explorer — Illustrated Live Test</a><small>Explore the illustrated fretboard, direct string selection, note filtering, enharmonic labels, tuning, and temporary Focus annotations.</small></li>
-    <li><strong class="new-feature">New Feature</strong><a href="chord-shape-explorer-test.html">Chord Shape Explorer — Illustrated Live Test</a><small>Explore beginner open-chord shapes, chord tones, editable fingerings, open and muted strings, enharmonic labels, and teacher-directed Focus.</small></li>
-    <li><a href="scale-explorer-test.html">Scale Explorer — Illustrated Live Test</a><small>Explore Major and minor Diatonic, Pentatonic, and Blues scales across the illustrated fretboard or by Shape 1–5; compare notes, intervals, enharmonic labels, the chromatic key wheel, and Focus.</small></li>
-    <li><strong class="new-feature">New Feature</strong><a href="key-explorer-test.html">Key Explorer — Live Test</a><small>Explore major-key scales, diatonic chords, triad construction, harmonic roles, and common chord movement.</small></li>
-  </ul>
+  <main>
+    <h2 class="section-heading" id="explorers">Choose an Explorer</h2>
+    <p class="section-intro">Open any Explorer below and begin experimenting with its controls.</p>
+
+    <div class="tool-grid">
+      <article class="tool">
+        <h3>Fretboard Explorer</h3>
+        <p>Explore note locations, direct string selection, note filtering, enharmonic labels, tunings, and temporary Focus annotations.</p>
+        <p class="tool-link"><a href="fretboard-selection-test.html">Open Fretboard Explorer</a></p>
+      </article>
+
+      <article class="tool">
+        <h3>Chord Shape Explorer <span class="new-feature">New Feature</span></h3>
+        <p>Explore beginner open-chord shapes, chord tones, editable fingerings, open and muted strings, and teacher-directed Focus.</p>
+        <p class="tool-link"><a href="chord-shape-explorer-test.html">Open Chord Shape Explorer</a></p>
+      </article>
+
+      <article class="tool">
+        <h3>Scale Explorer</h3>
+        <p>Explore major and minor diatonic, pentatonic, and blues scales across the fretboard or within five familiar shapes.</p>
+        <p class="tool-link"><a href="scale-explorer-test.html">Open Scale Explorer</a></p>
+      </article>
+
+      <article class="tool">
+        <h3>Key Explorer <span class="new-feature">New Feature</span></h3>
+        <p>Explore major-key scales, diatonic chords, triad construction, harmonic roles, and common chord movement.</p>
+        <p class="tool-link"><a href="key-explorer-test.html">Open Key Explorer</a></p>
+      </article>
+    </div>
+
+    <section class="tester-note" aria-labelledby="testing-heading">
+      <h2 id="testing-heading">How to help test Theory Toolkit</h2>
+      <p>The current Explorers have completed initial functional testing, but they are not the finished Theory Toolkit interface. Please test both how they work and whether the presentation helps you understand what you are seeing.</p>
+      <p>Please explore rather than following a strict test script. Change selections, try combinations, and see whether each page behaves the way you expect it to.</p>
+      <p>The feedback I am most interested in is:</p>
+      <ul>
+        <li><strong>What worked?</strong> What felt clear, useful, or intuitive?</li>
+        <li><strong>What did not?</strong> Did anything behave incorrectly, confusingly, or awkwardly?</li>
+        <li><strong>What did you expect?</strong> If something surprised you, what did you think would happen instead?</li>
+        <li><strong>What would you like to see added?</strong> Is there a control, comparison, view, or piece of information that would make this more useful?</li>
+      </ul>
+      <p>You do not need to be a music-theory expert to give useful feedback. If something does not make sense, that itself is useful information. Instructors and experienced players are also encouraged to identify anything musically misleading or anything they would present differently to a student.</p>
+      <p>Theory Toolkit is a teaching supplement. It does not replace an instructor or independently teach music theory.</p>
+    </section>
+  </main>
+
+  <button type="button" class="scroll-cue" id="scroll-cue" aria-label="Scroll down to see more">More below ↓</button>
+
+  <script>
+    const scrollCue = document.querySelector("#scroll-cue");
+
+    function updateScrollCue() {
+      const page = document.documentElement;
+      const hasMoreBelow = window.scrollY + window.innerHeight < page.scrollHeight - 32;
+      scrollCue.hidden = !hasMoreBelow;
+    }
+
+    scrollCue.addEventListener("click", () => {
+      window.scrollBy({ top: window.innerHeight * .75, behavior: "smooth" });
+    });
+    window.addEventListener("scroll", updateScrollCue, { passive: true });
+    window.addEventListener("resize", updateScrollCue);
+    updateScrollCue();
+  </script>
 
   <script type="module">
     import { installFeedback } from "../src/ui/feedback.js";
