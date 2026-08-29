@@ -71,6 +71,36 @@ const FRETBOARD_EXPLORER_GEOMETRY = {
   ]
 };
 
+const LAP_STEEL_EXPLORER_GEOMETRY = {
+  // Calibrated directly to the strings and position lines in Daryl Clemons's
+  // close photograph. The note rows follow the strings' subtle widening.
+  nutX: 7.35, openX: 5.08, openNoteX: 5.69, lastFretX: 100, headerTop: 88, headerHeight: 7.5,
+  labelLeft: 1.1, labelWidth: 3,
+  selectorHeaderLeft: .4, selectorHeaderTop: 3,
+  selectorHeaderWidth: 6, selectorHeaderHeight: 5.8,
+  nutTopString: 24.36, nutStringGap: 10.26,
+  bodyTopString: 18, bodyStringGap: 13.2,
+  fretBoundaries: [
+    7.35, 14.70, 21.84, 28.65, 35.24, 41.51, 47.46, 53.08,
+    58.43, 63.51, 68.38, 73.03, 77.51, 81.84, 85.84, 89.68,
+    93.24, 96.70, 100
+  ]
+};
+
+const BASS_EXPLORER_GEOMETRY = {
+  // Calibrated to Rob's close overhead photograph of his Epiphone Viola Bass.
+  nutX: 7.10, lastFretX: 92.77, headerTop: 88, headerHeight: 7.5,
+  labelLeft: 1.8, labelWidth: 3.4,
+  selectorHeaderLeft: .5, selectorHeaderTop: 3,
+  selectorHeaderWidth: 6.2, selectorHeaderHeight: 5.8,
+  nutTopString: 33.46, nutStringGap: 9.8,
+  bodyTopString: 29.96, bodyStringGap: 13,
+  fretBoundaries: [
+    7.10, 15.17, 22.85, 30.14, 37.11, 43.68, 49.80, 55.34,
+    60.87, 66.15, 71.22, 76.04, 80.92, 84.83, 89.32, 92.77
+  ]
+};
+
 function setBox(element, left, top, width, height) {
   element.style.setProperty("--cell-left", `${left}%`);
   element.style.setProperty("--cell-top", `${top}%`);
@@ -101,9 +131,14 @@ function stringBox(stringIndex, xCenter, geometry) {
   return { top: center - (height / 2), height };
 }
 
-export function positionFretboardCells(table, maxFret = FRETBOARD_MAX_FRET) {
+export function positionFretboardCells(table, maxFret = FRETBOARD_MAX_FRET, instrumentId = table.dataset.instrument) {
   const compactOpen = table.classList.contains("fretboard-diagnostic");
-  const geometry = compactOpen ? FRETBOARD_EXPLORER_GEOMETRY : DEFAULT_GEOMETRY;
+  const explorerGeometries = {
+    guitar: FRETBOARD_EXPLORER_GEOMETRY,
+    lapSteel: LAP_STEEL_EXPLORER_GEOMETRY,
+    bass: BASS_EXPLORER_GEOMETRY
+  };
+  const geometry = compactOpen ? (explorerGeometries[instrumentId] ?? FRETBOARD_EXPLORER_GEOMETRY) : DEFAULT_GEOMETRY;
   const boundaries = fretBoundaries(maxFret, geometry);
   const headerCells = table.querySelectorAll("thead th");
   const openWidth = compactOpen ? 3 : 6;
@@ -119,7 +154,8 @@ export function positionFretboardCells(table, maxFret = FRETBOARD_MAX_FRET) {
   }
   if (headerCells[1]) {
     headerCells[1].classList.add("open-position");
-    setBox(headerCells[1], geometry.nutX - (openWidth / 2), geometry.headerTop, openWidth, geometry.headerHeight);
+    const openX = geometry.openX ?? geometry.nutX;
+    setBox(headerCells[1], openX - (openWidth / 2), geometry.headerTop, openWidth, geometry.headerHeight);
   }
   for (let fret = 1; fret <= maxFret; fret += 1) {
     const left = boundaries[fret - 1];
@@ -133,8 +169,9 @@ export function positionFretboardCells(table, maxFret = FRETBOARD_MAX_FRET) {
 
     if (cells[1]) {
       cells[1].classList.add("open-position");
-      const openBox = stringBox(stringIndex, geometry.nutX, geometry);
-      setBox(cells[1], geometry.nutX - (openWidth / 2), openBox.top, openWidth, openBox.height);
+      const openX = geometry.openNoteX ?? geometry.openX ?? geometry.nutX;
+      const openBox = stringBox(stringIndex, openX, geometry);
+      setBox(cells[1], openX - (openWidth / 2), openBox.top, openWidth, openBox.height);
     }
 
     for (let fret = 1; fret <= maxFret; fret += 1) {
