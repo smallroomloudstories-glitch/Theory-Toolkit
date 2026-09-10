@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Theory Toolkit - Key Explorer Live Test</title>
+  <title>Theory Toolkit - Key Explorer</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <style>
     :root {
@@ -81,9 +81,8 @@
   <link rel="stylesheet" href="./src/ui/feedback.css">
 </head>
 <body>
-  <p><a href="index.html">← Current Builds</a></p>
-  <div class="page-title"><h1>Key Explorer — Live Test</h1><span class="update-stamp">Updated August 18, 2026</span></div>
-  <p class="workbench-mark">New feature for live testing.</p>
+  <p><a href="index.html">← Theory Toolkit Home</a></p>
+  <div class="page-title"><h1>Key Explorer</h1><span class="update-stamp">Updated August 18, 2026</span></div>
   <p class="checkpoint-note">Explore a major key’s scale, diatonic chords, triad construction, harmonic roles, and common chord movement.</p>
 
   <section class="key-controls" aria-labelledby="key-control-heading">
@@ -324,7 +323,7 @@
         `Chord: ${selectedChord && selectedKey ? chordName(selectedKey, selectedChord) : "None"}`
       ].join("; ");
     }
-    installFeedback({ page: "Key Explorer", build: "New Feature Live Test", getContext: toolkitContext });
+    installFeedback({ page: "Key Explorer", build: "Public Version", getContext: toolkitContext });
     render();
   </script>
 </body>
