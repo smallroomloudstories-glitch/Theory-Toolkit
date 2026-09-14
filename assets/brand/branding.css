@@ -1,0 +1,29 @@
+.brand-heading {
+  margin: 0;
+}
+
+.brand-logo {
+  display: block;
+  width: min(46rem, 100%);
+  height: auto;
+}
+
+.site-home {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  color: #333;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.site-home:hover,
+.site-home:focus-visible {
+  text-decoration: underline;
+}
+
+.site-home img {
+  display: block;
+  width: min(15rem, 60vw);
+  height: auto;
+}
