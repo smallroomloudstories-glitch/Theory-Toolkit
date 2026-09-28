@@ -94,6 +94,7 @@
       .detail-panel { grid-template-columns: 1fr; }
     }
   </style>
+  <link rel="stylesheet" href="./src/ui/feedback.css">
 </head>
 <body>
   <header class="toolkit-header">
@@ -158,6 +159,7 @@
 
   <script type="module">
     import { MAJOR_KEYS, DIATONIC_CHORDS } from "./src/data/key-explorer-data.js?v=20260818-2";
+    import { installFeedback } from "./src/ui/feedback.js";
 
     const PROGRESSIONS = [
       {
@@ -360,6 +362,14 @@
     });
     document.addEventListener("click", event => { if (!wheel.contains(event.target)) closeWheel(); });
     clearProgression.addEventListener("click", clearSelectedProgression);
+    function toolkitContext() {
+      return [
+        `Key: ${selectedKey?.label ?? "None"} Major`,
+        `Progression: ${selectedProgression?.numerals?.join(" – ") ?? "None"}`,
+        `Chords: ${selectedProgression ? progressionChordNames(selectedProgression).join(" – ") : "None"}`
+      ].join("; ");
+    }
+    installFeedback({ page: "Progression Explorer", build: "Public Version", getContext: toolkitContext });
     render();
   </script>
 </body>
