@@ -13,6 +13,16 @@
   <style>
     body { font-family: sans-serif; max-width: 1650px; margin: 1.25rem auto 2rem; padding: 0 1rem; }
     h1 { margin: .35rem 0; }
+    .toolkit-header { display: flex; align-items: center; justify-content: space-between; gap: 2rem; width: min(1618px, calc(100vw - 2rem)); margin-left: 50%; transform: translateX(-50%); }
+    .toolkit-header > p { margin: 0; }
+    .explorer-nav { display: grid; grid-template-columns: 5.8rem 4.5rem 7.4rem 4rem 6.5rem; justify-content: end; gap: .45rem; margin-left: auto; }
+    .explorer-nav a, .explorer-nav .current { text-align: center; white-space: nowrap; }
+    .explorer-nav a, .explorer-nav .current { display: inline-block; padding: .3rem .55rem; border: 1px solid #c8c8c8; border-radius: 3px; font-size: .9rem; text-decoration: none; }
+    .explorer-nav a { color: #444; background: #fff; }
+    .explorer-nav a:hover, .explorer-nav a:focus-visible { border-color: #888; text-decoration: underline; }
+    .explorer-nav .current { color: #888; background: #f4f4f4; }
+    @media (max-width: 900px) { .toolkit-header { align-items: flex-start; flex-direction: column; gap: .65rem; } .explorer-nav { display: flex; justify-content: flex-start; margin-left: 0; } }
+
     .page-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: .65rem; }
     .update-stamp { font-size: 10pt; font-weight: normal; color: #555; white-space: nowrap; }
     .workbench-mark { margin: .25rem 0; font-weight: bold; }
@@ -49,7 +59,16 @@
   <link rel="stylesheet" href="./src/ui/mobile-support-notice.css">
 </head>
 <body>
-  <p><a class="site-home" href="index.html"><img src="./assets/brand/theory-toolkit-logo-no-tagline.png" alt="Theory Toolkit"><span>Theory Toolkit Home</span></a></p>
+  <header class="toolkit-header">
+  <p><a class="workbench-home" href="index.html"><img src="./assets/brand/theory-toolkit-logo-no-tagline.png" alt="Theory Toolkit"><span>Home</span></a></p>
+  <nav class="explorer-nav" aria-label="Explorer navigation">
+      <a href="fretboard-explorer.html">Fretboard</a>
+      <a href="scale-explorer.html">Scale</a>
+      <span class="current" aria-current="page">Chord Shapes</span>
+      <a href="key-explorer.html">Key</a>
+      <a href="progression-explorer.html">Progressions</a>
+  </nav>
+</header>
   <div class="page-title"><h1>Chord Shape Explorer</h1><span class="update-stamp">Updated August 16, 2026</span></div>
   <p class="checkpoint-note">Explore beginner open-chord shapes, chord tones, editable fingering, string muting, and teacher-directed Focus on the shared illustrated fretboard.</p>
 
