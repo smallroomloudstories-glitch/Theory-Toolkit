@@ -7,8 +7,6 @@
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/brand/favicon-32.png">
   <link rel="icon" type="image/png" sizes="512x512" href="./assets/brand/favicon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/brand/apple-touch-icon.png">
-  <link rel="stylesheet" href="./assets/brand/branding.css">
-  <link rel="stylesheet" href="./src/ui/feedback.css">
   <style>
     :root {
       --border: #aaa;
@@ -16,25 +14,27 @@
       --surface: #f5f5f5;
       --selected: #1e4f87;
       --selected-soft: #eaf3ff;
-      --tonic: #bfe8c2;
-      --tonic-ink: #163b1a;
+      --step-1: #cfe8cf;
+      --step-2: #cfe1f2;
+      --step-3: #f4d8b8;
+      --step-4: #dedede;
     }
     * { box-sizing: border-box; }
     body { font-family: sans-serif; max-width: 1450px; margin: 1.25rem auto 2.5rem; padding: 0 1rem; line-height: 1.4; }
     h1 { margin: .35rem 0; }
     .toolkit-header { display: flex; align-items: center; justify-content: space-between; gap: 2rem; width: min(1618px, calc(100vw - 2rem)); margin-left: 50%; transform: translateX(-50%); }
     .toolkit-header > p { margin: 0; }
-    .toolkit-header .workbench-home img { display: block; width: min(15rem, 60vw); height: auto; }
     .explorer-nav { display: grid; grid-template-columns: 5.8rem 4.5rem 7.4rem 4rem 6.5rem; justify-content: end; gap: .45rem; margin-left: auto; }
     .explorer-nav a, .explorer-nav .current { text-align: center; white-space: nowrap; }
     .explorer-nav a, .explorer-nav .current { display: inline-block; padding: .3rem .55rem; border: 1px solid #c8c8c8; border-radius: 3px; font-size: .9rem; text-decoration: none; }
     .explorer-nav a { color: #444; background: #fff; }
     .explorer-nav a:hover, .explorer-nav a:focus-visible { border-color: #888; text-decoration: underline; }
     .explorer-nav .current { color: #888; background: #f4f4f4; }
-    @media (max-width: 900px) { .toolkit-header { align-items: flex-start; flex-direction: column; gap: .65rem; } .explorer-nav { display: flex; justify-content: flex-start; margin-left: 0; } }
+    @media (max-width: 900px) { .toolkit-header { align-items: flex-start; flex-direction: column; gap: .65rem; }  .explorer-nav { display: flex; justify-content: flex-start; margin-left: 0; } }
 
-    .page-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: .65rem; }
-    .update-stamp { font-size: 10pt; font-weight: normal; color: #555; white-space: nowrap; }
+    .workbench-home { display: inline-flex; align-items: center; gap: .55rem; color: #333; font-weight: bold; text-decoration: none; }
+    .workbench-home:hover, .workbench-home:focus-visible { text-decoration: underline; }
+    .workbench-home img { display: block; width: min(15rem, 60vw); height: auto; }
     button { font: inherit; cursor: pointer; }
     button:focus-visible { outline: 3px solid #245a9a; outline-offset: 2px; }
     .workbench-mark { margin: .25rem 0; font-weight: bold; }
@@ -54,8 +54,19 @@
     .chord-scroll { overflow-x: auto; padding: .1rem 0 .3rem; }
     .chord-grid { display: grid; grid-template-columns: repeat(7, minmax(105px, 1fr)); min-width: 735px; gap: .35rem; }
     .chord-card { min-height: 4.65rem; padding: .4rem .35rem; border: 2px solid #999; background: #fff; text-align: center; }
-    .chord-card.used { border-color: var(--selected); background: var(--selected-soft); }
-    .chord-card.tonic { background: var(--tonic); color: var(--tonic-ink); }
+    .chord-card.step-1 { background: var(--step-1); }
+    .chord-card.step-2 { background: var(--step-2); }
+    .chord-card.step-3 { background: var(--step-3); }
+    .chord-card.step-4 { background: var(--step-4); }
+    .chord-card.step-1, .chord-card.step-2, .chord-card.step-3, .chord-card.step-4 { border-color: #777; }
+    .progression-color-key { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem .8rem; margin: .35rem 0 .65rem; color: #444; font-size: .88rem; }
+    .progression-color-key strong { color: #222; }
+    .progression-color-key .key-item { display: inline-flex; align-items: center; gap: .3rem; }
+    .progression-color-key .swatch { width: 1.05rem; height: 1.05rem; border: 1px solid #888; border-radius: 2px; }
+    .progression-color-key .step-1 { background: var(--step-1); }
+    .progression-color-key .step-2 { background: var(--step-2); }
+    .progression-color-key .step-3 { background: var(--step-3); }
+    .progression-color-key .step-4 { background: var(--step-4); }
     .chord-degree { display: block; font-size: 1rem; font-weight: bold; }
     .chord-name { display: block; min-height: 1.45rem; margin: .2rem 0 .05rem; font-size: 1.15rem; font-weight: bold; }
     .chord-quality { display: block; color: #555; font-size: .82rem; }
@@ -95,8 +106,9 @@
       <span class="current" aria-current="page">Progressions</span>
   </nav>
 </header>
-  <div class="page-title"><h1>Progression Explorer</h1><span class="update-stamp">Updated August 29, 2026</span></div>
-  <p class="checkpoint-note">Explore beginner-friendly common progressions made entirely from the seven diatonic chords of a major key.</p>
+  <h1>Progression Explorer</h1>
+  
+  
 
   <section class="key-controls" aria-labelledby="key-control-heading">
     <div>
@@ -112,6 +124,13 @@
 
   <main>
     <h2 class="section-title" id="chords-heading">Diatonic Chords in C Major</h2>
+    <div class="progression-color-key" aria-label="Progression color key">
+      <strong>Progression order:</strong>
+      <span class="key-item"><span class="swatch step-1" aria-hidden="true"></span>1st</span>
+      <span class="key-item"><span class="swatch step-2" aria-hidden="true"></span>2nd</span>
+      <span class="key-item"><span class="swatch step-3" aria-hidden="true"></span>3rd</span>
+      <span class="key-item"><span class="swatch step-4" aria-hidden="true"></span>4th</span>
+    </div>
     <div class="chord-scroll"><div class="chord-grid" id="chord-grid" aria-labelledby="chords-heading"></div></div>
 
     <h2 class="section-title" id="progressions-heading">Common Progressions</h2>
@@ -132,14 +151,13 @@
       </div>
       <div>
         <p class="detail-explanation" id="detail-explanation"></p>
-        <p class="song-placeholder"><strong>Planned:</strong> Verified song examples and authorized listening links will be added in a later build.</p>
+        <p class="song-placeholder"><strong>Example songs:</strong> Reserved for a later build after the presentation and linking approach are approved.</p>
       </div>
     </section>
   </main>
 
   <script type="module">
     import { MAJOR_KEYS, DIATONIC_CHORDS } from "./src/data/key-explorer-data.js?v=20260818-2";
-    import { installFeedback } from "./src/ui/feedback.js";
 
     const PROGRESSIONS = [
       {
@@ -266,10 +284,14 @@
     function renderChords() {
       chordsHeading.textContent = `Diatonic Chords in ${selectedKey.label} Major`;
       chordGrid.innerHTML = "";
-      const usedDegrees = new Set(selectedProgression?.numerals ?? []);
+      const progressionPositions = new Map();
+      (selectedProgression?.numerals ?? []).forEach((degree, index) => {
+        if (!progressionPositions.has(degree)) progressionPositions.set(degree, index + 1);
+      });
       DIATONIC_CHORDS.forEach(chord => {
         const card = document.createElement("div");
-        card.className = `chord-card${usedDegrees.has(chord.degree) ? " used" : ""}${chord.degree === "I" ? " tonic" : ""}`;
+        const step = progressionPositions.get(chord.degree);
+        card.className = `chord-card${step && step <= 4 ? ` step-${step}` : ""}`;
         card.innerHTML = `<span class="chord-degree">${chord.degree}</span><span class="chord-name">${chordName(selectedKey, chord)}</span><span class="chord-quality">${chord.quality}</span>`;
         chordGrid.appendChild(card);
       });
@@ -339,16 +361,6 @@
     document.addEventListener("click", event => { if (!wheel.contains(event.target)) closeWheel(); });
     clearProgression.addEventListener("click", clearSelectedProgression);
     render();
-
-    function toolkitContext() {
-      return [
-        `Major Key: ${selectedKey.label}`,
-        `Progression: ${selectedProgression ? selectedProgression.numerals.join(" – ") : "None"}`,
-        `Chords: ${selectedProgression ? progressionChordNames(selectedProgression).join(" – ") : "None"}`
-      ].join("; ");
-    }
-
-    installFeedback({ page: "Progression Explorer", build: "Beginner Progressions Public Version", getContext: toolkitContext });
   </script>
 </body>
 </html>
