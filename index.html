@@ -25,6 +25,14 @@
     h1, h2, h3 { line-height: 1.2; }
     a { font-weight: bold; }
     .hero { border: 3px solid #222; padding: 1rem 1.25rem; background: #fafafa; }
+    .hero-top { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; }
+    .hero-top .brand-heading { margin: 0; flex: 0 1 auto; }
+    .cost-note { position: relative; flex: 0 0 auto; }
+    .cost-note summary { list-style: none; cursor: pointer; font-weight: bold; border: 2px solid var(--accent); padding: .55rem .8rem; background: #fff; color: var(--accent); }
+    .cost-note summary::-webkit-details-marker { display: none; }
+    .cost-note summary:hover, .cost-note summary:focus-visible { background: var(--accent-soft); }
+    .cost-answer { position: absolute; right: 0; top: calc(100% + .45rem); z-index: 20; width: min(23rem, 80vw); padding: .75rem .85rem; border: 2px solid var(--accent); background: #fff; box-shadow: 0 .2rem .65rem rgba(0, 0, 0, .2); }
+    .cost-answer p { margin: 0; }
     .hero p { max-width: 850px; margin: .35rem 0; }
     .build-mark { font-weight: bold; }
     .start-note { margin: 1rem 0 .8rem; padding: .7rem .85rem; border-left: 5px solid var(--accent); background: var(--accent-soft); }
@@ -72,6 +80,8 @@
     @media (max-width: 650px) {
       body { margin-top: .75rem; }
       .hero { padding: .8rem .9rem; }
+      .hero-top { align-items: flex-start; flex-direction: column; gap: .6rem; }
+      .cost-answer { left: 0; right: auto; width: min(23rem, calc(100vw - 3.8rem)); }
       .tool-grid { grid-template-columns: 1fr; }
     }
   </style>
@@ -79,7 +89,15 @@
 </head>
 <body>
   <header class="hero">
-    <h1 class="brand-heading"><img class="brand-logo" src="./assets/brand/theory-toolkit-logo.png" alt="Theory Toolkit — See How Music Fits Together"></h1>
+    <div class="hero-top">
+      <h1 class="brand-heading"><img class="brand-logo" src="./assets/brand/theory-toolkit-logo.png" alt="Theory Toolkit — See How Music Fits Together"></h1>
+      <details class="cost-note">
+        <summary>How much does Theory Toolkit cost?</summary>
+        <div class="cost-answer">
+          <p><strong>Nothing. Now or later.</strong> This web app is free to use and share and will remain that way as it continues to grow. No account, email address, or payment information is required.</p>
+        </div>
+      </details>
+    </div>
     <p class="build-mark">Explore Theory Toolkit</p>
     <p>Theory Toolkit is a visual companion for music students and instructors. It is designed to make musical relationships easier to see during a lesson and easier to revisit while practicing or reviewing.</p>
   </header>
