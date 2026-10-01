@@ -165,6 +165,20 @@
 
   <script>
     const scrollCue = document.querySelector("#scroll-cue");
+    const costNote = document.querySelector(".cost-note");
+
+    document.addEventListener("click", (event) => {
+      if (costNote.open && !costNote.contains(event.target)) {
+        costNote.open = false;
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && costNote.open) {
+        costNote.open = false;
+        costNote.querySelector("summary").focus();
+      }
+    });
 
     function updateScrollCue() {
       const page = document.documentElement;
