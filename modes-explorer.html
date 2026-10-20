@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theory Toolkit - Modes Explorer</title>
+<link rel="icon" type="image/png" sizes="32x32" href="./assets/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./assets/brand/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/brand/apple-touch-icon.png">
+<style>
+:root{--border:#aaa;--soft:#d3d3d3;--surface:#f7f7f7;--accent:#1e4f87;--changed:#fff0a8;--changed-border:#a77d00;--selected:#dcecff}
+*{box-sizing:border-box}
+body{font-family:sans-serif;max-width:1250px;margin:1.25rem auto 3rem;padding:0 1rem;line-height:1.4;color:#222}
+h1{margin:.35rem 0}.toolkit-header{display:flex;align-items:center;justify-content:space-between;gap:2rem;width:min(1450px,calc(100vw - 2rem));margin-left:50%;transform:translateX(-50%)}
+.toolkit-header>p{margin:0}.workbench-home{display:inline-flex;align-items:center;gap:.55rem;color:#333;font-weight:bold;text-decoration:none}.workbench-home img{display:block;width:min(15rem,60vw);height:auto}
+.explorer-nav{display:flex;justify-content:flex-end;gap:.4rem;margin-left:auto;flex-wrap:wrap}.explorer-nav a,.explorer-nav .current{display:inline-block;padding:.3rem .5rem;border:1px solid #c8c8c8;border-radius:3px;font-size:.88rem;text-decoration:none;white-space:nowrap}.explorer-nav a{color:#444;background:#fff}.explorer-nav a:hover,.explorer-nav a:focus-visible{text-decoration:underline;border-color:#888}.explorer-nav .current{color:#888;background:#f4f4f4}
+.workbench-mark{margin:.25rem 0;font-weight:bold}.checkpoint-note{margin:.4rem 0 1.2rem;max-width:950px}
+.controls{display:flex;flex-wrap:wrap;gap:1rem;align-items:end;padding:.7rem .8rem;border:1px solid var(--soft);background:#fafafa}.control label{display:block;margin-bottom:.25rem;font-weight:bold}.control select{min-width:9rem;padding:.35rem .5rem;font:inherit}.tonic-wheel{position:relative;width:7rem}.tonic-wheel-trigger{width:100%;min-height:2.15rem;padding:.3rem .5rem;border:1px solid #777;background:#fff;text-align:left;font:inherit;cursor:pointer}.tonic-wheel-trigger::after{float:right;content:"▾"}.tonic-wheel-menu{position:absolute;top:50%;left:0;z-index:20;width:100%;border:1px solid #777;background:#fff;box-shadow:0 .25rem .75rem rgba(0,0,0,.25);overflow:hidden;transform:translateY(-50%)}.tonic-wheel-menu[hidden]{display:none}.tonic-wheel-option{display:block;width:100%;margin:0;padding:.24rem .4rem;border:0;background:#fff;text-align:center;font:inherit;cursor:pointer}.tonic-wheel-option:hover,.tonic-wheel-option:focus{background:#e3efff}.tonic-wheel-option.center{border-top:1px solid #777;border-bottom:1px solid #777;background:#f1f1f1;font-weight:bold}.spelling-help{position:relative;display:inline-block;margin-left:.35rem;vertical-align:middle}.spelling-help-button{width:1.35rem;height:1.35rem;padding:0;border:1px solid #888;border-radius:50%;background:#fff;color:#555;font:bold .82rem/1 sans-serif;cursor:help}.spelling-help-popup{position:absolute;left:1.75rem;top:-.35rem;z-index:30;width:20rem;padding:.6rem .7rem;border:1px solid #888;border-radius:.25rem;background:#fff;box-shadow:0 .25rem .75rem rgba(0,0,0,.2);color:#333;font-size:.82rem;line-height:1.35}.spelling-help-popup{display:none}.spelling-help:hover .spelling-help-popup,.spelling-help:focus-within .spelling-help-popup,.spelling-help-popup.is-open{display:block}
+.discovery-slot{position:relative;height:2.55rem}.discovery-wrap{position:absolute;left:0;top:.35rem;display:none;width:max-content;max-width:100%;z-index:10}.discovery-wrap.unlocked{display:block}.discovery-button{padding:.42rem .72rem;border:1px solid #754760;border-radius:999px;background:#ead8e4;color:#4d2e40;font:600 .9rem/1.2 sans-serif;cursor:pointer;box-shadow:0 .12rem .3rem rgba(0,0,0,.12)}.discovery-button:hover,.discovery-button:focus-visible{background:#dfc4d5;border-color:#593447}.discovery-wrap.just-unlocked{animation:discovery-arrive .65s cubic-bezier(.18,.82,.3,1)}@keyframes discovery-arrive{from{transform:translateX(45vw);opacity:.15}to{transform:translateX(0);opacity:1}}.discovery-popup{position:fixed;left:50%;top:12.5rem;transform:translateX(-50%);z-index:40;width:min(31rem,calc(100vw - 2rem));padding:.8rem .9rem;border:1px solid #8e5a7b;border-radius:.35rem;background:#fff;box-shadow:0 .35rem 1rem rgba(0,0,0,.22);font-size:.9rem;line-height:1.4}.discovery-popup[hidden]{display:none}.discovery-popup p{margin:.25rem 0 .55rem}.discovery-popup p:last-child{margin-bottom:.1rem}.mode-path{font-weight:bold;color:#56354a}.discovery-close{float:right;margin:-.15rem -.15rem .25rem .6rem;border:0;background:transparent;color:#555;font-size:1.25rem;line-height:1;cursor:pointer}
+@media(prefers-reduced-motion:reduce){.discovery-wrap.just-unlocked{animation:discovery-fade .2s ease-out}@keyframes discovery-fade{from{opacity:0}to{opacity:1}}}
+.flow{margin-top:0}.scale-panel{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:1rem;align-items:center;padding:.8rem;border:1px solid var(--border);background:#fff}.scale-panel+.connector{margin:.25rem 0}
+.scale-panel.mode{border:2px solid var(--accent);background:#fbfdff}.panel-heading{display:flex;align-items:baseline;gap:.55rem;flex-wrap:wrap;margin:0 0 .55rem}.panel-heading h2{margin:0;font-size:1.15rem}.relationship{color:#555;font-size:.88rem}.parent-explanation{color:#555;font-size:.9rem}
+.note-row{display:grid;grid-template-columns:repeat(7,minmax(55px,1fr));border:1px solid var(--soft);min-width:420px}.note-cell{text-align:center;padding:.45rem .2rem;border-right:1px solid var(--soft);background:#fff}.note-cell:last-child{border-right:0}.degree{display:block;color:#666;font-size:.75rem}.note{display:block;font-size:1.25rem;font-weight:bold}.note-cell.changed{background:var(--changed);box-shadow:inset 0 0 0 2px var(--changed-border)}
+.scale-wrap{overflow-x:auto}.change-summary{margin:.6rem 0 0;font-weight:bold}.change-summary .quiet{font-weight:normal;color:#555}
+.connector{text-align:center;color:#666;font-size:.9rem}.connector strong{color:#333}.parent-note{margin:.55rem 0 0;color:#555;font-size:.9rem}
+.keyboard{position:relative;width:238px;height:88px;margin:auto}.white-key{position:absolute;top:0;width:34px;height:88px;border:1px solid #777;background:#fff;border-radius:0 0 3px 3px}.black-key{position:absolute;top:0;width:22px;height:54px;border:1px solid #222;background:#222;z-index:2;border-radius:0 0 2px 2px}.white-key.on{background:var(--selected)}.black-key.on{background:#6996c8}.key-label{position:absolute;bottom:4px;width:100%;text-align:center;font-size:.65rem;color:#555}.black-key .key-label{color:#fff;bottom:3px}
+.explanation-row{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:1rem;align-items:center;margin:.2rem 0 .35rem}.legend{margin:0;color:#555;font-size:.88rem}.keyboard-column-note{width:260px;margin:0;padding:.3rem .45rem;text-align:center;color:#555;font-size:.82rem;border:1px solid var(--soft);background:#fafafa}.swatch{display:inline-block;width:1.1rem;height:.8rem;margin:0 .25rem 0 .45rem;vertical-align:-.05rem;background:var(--changed);border:1px solid var(--changed-border)}
+@media(max-width:800px){.explanation-row{grid-template-columns:1fr;margin-top:.2rem}.keyboard-column-note{width:auto;margin:.4rem 0}.toolkit-header{align-items:flex-start;flex-direction:column;gap:.65rem}.explorer-nav{justify-content:flex-start;margin-left:0}.scale-panel{grid-template-columns:1fr}.keyboard{margin:.4rem 0 0}.note-row{min-width:385px}}
+</style>
+</head>
+<body>
+<header class="toolkit-header">
+<p><a class="workbench-home" href="index.html"><img src="./assets/brand/theory-toolkit-logo-no-tagline.png" alt="Theory Toolkit"><span>Home</span></a></p>
+<nav class="explorer-nav" aria-label="Explorer navigation">
+<a href="fretboard-explorer.html">Fretboard</a><a href="scale-explorer.html">Scale</a><a href="chord-shape-explorer.html">Chord Shapes</a><a href="key-explorer.html">Key</a><a href="progression-explorer.html">Progressions</a><span class="current" aria-current="page">Modes</span>
+</nav>
+</header>
+<h1>Modes Explorer</h1>
+<p class="checkpoint-note">Compare a mode directly with the Major scale on the same tonic, then see the parent Major scale that contains the same notes.</p>
+
+<section class="controls" aria-label="Mode controls">
+<div class="control"><label id="tonic-label">Choose a Tonic <span class="spelling-help"><button type="button" class="spelling-help-button" id="spelling-help-button" aria-label="Why some tonics use sharps and others use flats" aria-expanded="false">?</button><span class="spelling-help-popup" id="spelling-help-popup" role="tooltip">Sharps and flats are chosen for conventional, readable scale spelling. Each mode is spelled by letter name in scale order—one of each letter—so the same pitch may be written with a sharp or flat depending on the tonic and mode.</span></span></label><div class="tonic-wheel" id="tonic-wheel"><button type="button" class="tonic-wheel-trigger" id="tonic-wheel-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="tonic-label tonic-wheel-trigger">D</button><div class="tonic-wheel-menu" id="tonic-wheel-menu" role="listbox" aria-label="Tonics" hidden></div></div></div>
+<div class="control"><label for="mode">Mode</label><select id="mode"></select></div>
+</section>
+<div class="discovery-slot"><div class="discovery-wrap" id="discovery-wrap">
+<button type="button" class="discovery-button" id="discovery-button" aria-expanded="false" aria-controls="discovery-popup">✨ Want to see something cool?</button>
+<div class="discovery-popup" id="discovery-popup" hidden>
+<button type="button" class="discovery-close" id="discovery-close" aria-label="Close">×</button>
+<p><strong>Try this:</strong> Pick any tonic, then move through the modes in this order:</p>
+<p class="mode-path">Lydian → Ionian → Mixolydian → Dorian → Aeolian → Phrygian → Locrian</p>
+<p>Pay attention to what changes each time.</p>
+<p>If you have an instrument handy, play each scale as you go. Does the sound seem to get progressively darker?</p>
+</div>
+</div></div>
+<div class="explanation-row"><p class="legend"><span class="swatch"></span>Highlighted notes show what changes between the Major reference and the selected parallel mode.</p><div class="keyboard-column-note" aria-label="Keyboard color key"><strong>Keyboard:</strong> blue keys are scale notes; white and black keys are not used in the scale.</div></div>
+
+<main class="flow">
+<section class="scale-panel">
+<div>
+<div class="panel-heading"><h2 id="major-title">D Major</h2><span class="relationship">Major reference</span></div>
+<div class="scale-wrap"><div class="note-row" id="major-row"></div></div>
+</div>
+<div class="keyboard" id="major-keyboard" aria-label="Major scale keyboard"></div>
+</section>
+
+<div class="connector">↓ <strong>same tonic</strong>, selected mode</div>
+
+<section class="scale-panel mode">
+<div>
+<div class="panel-heading"><h2 id="mode-title">D Ionian</h2><span class="relationship">Parallel mode</span></div>
+<div class="scale-wrap"><div class="note-row" id="mode-row"></div></div>
+<p class="change-summary" id="change-summary"></p>
+</div>
+<div class="keyboard" id="mode-keyboard" aria-label="Mode scale keyboard"></div>
+</section>
+
+<div class="connector">↓ <strong>same pitch collection</strong>, reordered around its parent Major tonic</div>
+
+<section class="scale-panel">
+<div>
+<div class="panel-heading"><h2 id="parent-title">D Major</h2><span class="parent-explanation" id="parent-note"></span></div>
+<div class="scale-wrap"><div class="note-row" id="parent-row"></div></div>
+
+</div>
+<div class="keyboard" id="parent-keyboard" aria-label="Parent Major scale keyboard"></div>
+</section>
+</main>
+
+<script>
+const NATURAL={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const LETTERS=["C","D","E","F","G","A","B"];
+const MAJOR=[0,2,4,5,7,9,11];
+const MODES=[
+{name:"Ionian",formula:[0,2,4,5,7,9,11],changes:"same as Major",degree:0},
+{name:"Dorian",formula:[0,2,3,5,7,9,10],changes:"♭3, ♭7",degree:1},
+{name:"Phrygian",formula:[0,1,3,5,7,8,10],changes:"♭2, ♭3, ♭6, ♭7",degree:2},
+{name:"Lydian",formula:[0,2,4,6,7,9,11],changes:"♯4",degree:3},
+{name:"Mixolydian",formula:[0,2,4,5,7,9,10],changes:"♭7",degree:4},
+{name:"Aeolian",formula:[0,2,3,5,7,8,10],changes:"♭3, ♭6, ♭7",degree:5},
+{name:"Locrian",formula:[0,1,3,5,6,8,10],changes:"♭2, ♭3, ♭5, ♭6, ♭7",degree:6}
+];
+const TONICS=["C","C♯","D","E♭","E","F","F♯","G","A♭","A","B♭","B"];
+function parseNote(n){const letter=n[0],rest=n.slice(1);let pc=NATURAL[letter];for(const ch of rest){if(ch==="♯")pc++;if(ch==="♭")pc--;}return{letter,pc:(pc+120)%12}}
+function accidental(diff){if(diff===0)return"";if(diff===1)return"♯";if(diff===2)return"♯♯";if(diff===-1)return"♭";if(diff===-2)return"♭♭";return diff>0?"♯".repeat(diff):"♭".repeat(-diff)}
+function spell(letter,target){let d=(target-NATURAL[letter]+12)%12;if(d>6)d-=12;return letter+accidental(d)}
+function scaleFor(tonic,formula){const p=parseNote(tonic),start=LETTERS.indexOf(p.letter);return formula.map((step,i)=>spell(LETTERS[(start+i)%7],(p.pc+step)%12))}
+function parentTonic(tonic,mode){const p=parseNote(tonic);const tonicLetter=LETTERS.indexOf(p.letter);const parentLetter=LETTERS[(tonicLetter-mode.degree+14)%7];const parentPc=(p.pc-MAJOR[mode.degree]+120)%12;return spell(parentLetter,parentPc)}
+function pcOf(n){return parseNote(n).pc}
+function renderRow(el,notes,changed=[],degrees=null){el.innerHTML=notes.map((n,i)=>'<div class="note-cell '+(changed.includes(i)?'changed':'')+'"><span class="degree">'+(degrees?degrees[i]:(i+1))+'</span><span class="note">'+n+'</span></div>').join("")}
+function renderKeyboard(el,notes){
+ const on=new Set(notes.map(pcOf)), tonicPc=pcOf(notes[0]);
+ const whitePcs=[0,2,4,5,7,9,11], whiteNames=["C","D","E","F","G","A","B"];
+ const startWhite=whitePcs.findIndex(pc=>pc>=tonicPc);
+ const tonicIsWhite=whitePcs.includes(tonicPc);
+ // Draw one visual octave beginning at the represented scale's tonic. For black-key
+ // tonics, include the neighboring white-key geometry so the black tonic can sit at
+ // the left edge while preserving recognizable piano spacing.
+ const order=[]; for(let i=0;i<8;i++) order.push((startWhite+i)%7);
+ const whiteW=34, leftPad=tonicIsWhite?0:11;
+ const whiteData=order.map((idx,i)=>({name:whiteNames[idx],pc:whitePcs[idx],x:leftPad+i*whiteW}));
+ const blackMap={0:1,1:3,3:6,4:8,5:10};
+ const blackNames={1:"C♯",3:"D♯",6:"F♯",8:"G♯",10:"A♯"};
+ let blacks=[];
+ whiteData.slice(0,-1).forEach((w,i)=>{
+   const naturalIdx=whitePcs.indexOf(w.pc), bpc=blackMap[naturalIdx];
+   if(bpc!==undefined) blacks.push({name:blackNames[bpc],pc:bpc,x:w.x+23});
+ });
+ if(!tonicIsWhite){
+   const tonicBlack=tonicPc;
+   const firstBlack=blacks.find(b=>b.pc===tonicBlack);
+   if(firstBlack){const shift=firstBlack.x;whiteData.forEach(w=>w.x-=shift);blacks.forEach(b=>b.x-=shift);}
+ }
+ const allX=whiteData.map(w=>w.x).concat(blacks.map(b=>b.x));
+ const minX=Math.min(...allX), maxX=Math.max(...whiteData.map(w=>w.x+whiteW));
+ const shift=minX<0?-minX:0; whiteData.forEach(w=>w.x+=shift);blacks.forEach(b=>b.x+=shift);
+ el.style.width=Math.ceil(maxX+shift)+"px";
+ el.innerHTML=whiteData.map(w=>'<div class="white-key '+(on.has(w.pc)?'on':'')+'" style="left:'+w.x+'px"><span class="key-label">'+w.name+'</span></div>').join("")+blacks.map(b=>'<div class="black-key '+(on.has(b.pc)?'on':'')+'" style="left:'+b.x+'px"><span class="key-label">'+b.name+'</span></div>').join("");
+}
+const tonicWheel=document.querySelector("#tonic-wheel"),tonicTrigger=document.querySelector("#tonic-wheel-trigger"),tonicMenu=document.querySelector("#tonic-wheel-menu"),modeSelect=document.querySelector("#mode");
+let tonicIndex=TONICS.indexOf("D");
+let previousExplorerState=null,explorerStateChanges=0,discoveryUnlocked=false;
+const discoveryWrap=document.querySelector("#discovery-wrap"),discoveryButton=document.querySelector("#discovery-button"),discoveryPopup=document.querySelector("#discovery-popup"),discoveryClose=document.querySelector("#discovery-close");
+function noteExplorerState(){
+ const state=tonicValue()+"|"+modeSelect.value;
+ if(previousExplorerState!==null&&state!==previousExplorerState&&!discoveryUnlocked){
+  explorerStateChanges++;
+  if(explorerStateChanges>=5){
+   discoveryUnlocked=true;
+   discoveryWrap.classList.add("unlocked","just-unlocked");
+   discoveryWrap.addEventListener("animationend",()=>discoveryWrap.classList.remove("just-unlocked"),{once:true});
+  }
+ }
+ previousExplorerState=state;
+}
+function setDiscoveryPopup(open){
+ discoveryPopup.hidden=!open;
+ discoveryButton.setAttribute("aria-expanded",open?"true":"false");
+}
+discoveryButton.addEventListener("click",e=>{e.stopPropagation();setDiscoveryPopup(discoveryPopup.hidden)});
+discoveryClose.addEventListener("click",()=>{setDiscoveryPopup(false);discoveryButton.focus()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!discoveryPopup.hidden){setDiscoveryPopup(false);discoveryButton.focus()}});
+
+MODES.forEach((m,i)=>modeSelect.add(new Option(m.name,i)));modeSelect.value="0";
+function tonicValue(){return TONICS[tonicIndex]}
+function buildTonicMenu(){
+ tonicMenu.innerHTML="";
+ for(let offset=-3;offset<=3;offset++){
+  const idx=(tonicIndex+offset+TONICS.length)%TONICS.length,b=document.createElement("button");
+  b.type="button";b.className="tonic-wheel-option"+(offset===0?" center":"");b.textContent=TONICS[idx];b.dataset.index=idx;b.setAttribute("role","option");b.setAttribute("aria-selected",offset===0?"true":"false");
+  b.addEventListener("click",()=>{tonicIndex=idx;closeTonicMenu();syncTonic();
+const spellingHelpButton=document.querySelector("#spelling-help-button"),spellingHelpPopup=document.querySelector("#spelling-help-popup");
+spellingHelpButton.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const open=spellingHelpPopup.classList.toggle("is-open");spellingHelpButton.setAttribute("aria-expanded",open?"true":"false")});
+document.addEventListener("click",e=>{if(!document.querySelector(".spelling-help").contains(e.target)){spellingHelpPopup.classList.remove("is-open");spellingHelpButton.setAttribute("aria-expanded","false")}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){spellingHelpPopup.classList.remove("is-open");spellingHelpButton.setAttribute("aria-expanded","false")}});update()});tonicMenu.appendChild(b);
+ }
+}
+function syncTonic(){tonicTrigger.textContent=tonicValue();buildTonicMenu()}
+function openTonicMenu(){buildTonicMenu();tonicMenu.hidden=false;tonicTrigger.setAttribute("aria-expanded","true");tonicMenu.querySelector(".center").focus()}
+function closeTonicMenu(){tonicMenu.hidden=true;tonicTrigger.setAttribute("aria-expanded","false")}
+tonicTrigger.addEventListener("click",()=>tonicMenu.hidden?openTonicMenu():closeTonicMenu());
+tonicWheel.addEventListener("wheel",e=>{e.preventDefault();tonicIndex=(tonicIndex+(e.deltaY>0?1:-1)+TONICS.length)%TONICS.length;syncTonic();update()},{passive:false});
+document.addEventListener("click",e=>{if(!tonicWheel.contains(e.target))closeTonicMenu()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeTonicMenu();tonicTrigger.focus()}});
+syncTonic();
+function update(){
+ const t=tonicValue(),m=MODES[+modeSelect.value],maj=scaleFor(t,MAJOR),modal=scaleFor(t,m.formula);
+ const changed=MAJOR.map((x,i)=>x!==m.formula[i]?i:-1).filter(i=>i>=0);
+ const pt=parentTonic(t,m),parent=scaleFor(pt,MAJOR);
+ document.querySelector("#major-title").textContent=t+" Major";
+ document.querySelector("#mode-title").textContent=t+" "+m.name;
+ document.querySelector("#parent-title").textContent=pt+" Major";
+ const modeDegrees=m.formula.map((step,i)=>{const d=step-MAJOR[i];return d===-1?"♭"+(i+1):d===1?"♯"+(i+1):String(i+1)});
+ renderRow(document.querySelector("#major-row"),maj,changed);renderRow(document.querySelector("#mode-row"),modal,changed,modeDegrees);renderRow(document.querySelector("#parent-row"),parent,[]);
+ renderKeyboard(document.querySelector("#major-keyboard"),maj);renderKeyboard(document.querySelector("#mode-keyboard"),modal);renderKeyboard(document.querySelector("#parent-keyboard"),parent);
+ const summary=document.querySelector("#change-summary");
+ summary.innerHTML=m.degree===0?'<span class="quiet">Ionian is the Major scale, so no notes change.</span>':m.name+' differs from Major by: '+m.changes;
+ document.querySelector("#parent-note").textContent=m.degree===0?t+" Ionian uses the same notes as "+pt+" Major.":t+" "+m.name+" uses the same notes as "+pt+" Major, but "+t+" is the tonal center.";
+ noteExplorerState();
+}
+modeSelect.addEventListener("change",update);update();
+</script>
+</body></html>
